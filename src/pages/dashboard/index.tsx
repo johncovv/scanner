@@ -1,132 +1,214 @@
-import { BsFolder, BsFiletypePdf } from 'react-icons/bs';
-import { BiChevronDown } from 'react-icons/bi';
-
-import style from '@/styles/Dashboard.module.css';
+import { GetServerSidePropsContext } from 'next';
+import { resolve, extname } from 'path';
+import { readdirSync, readFileSync } from 'fs';
 import { useState } from 'react';
 
-export default function User() {
-	const [data, setData] = useState([
-		{
-			id: 'folder_1',
-			title: 'Projeto 1',
-			type: 'folder',
-			isOpen: true,
-			leaf: [
-				{
-					title: 'Subprojeto 1',
-					type: 'file',
-					ext: 'pdf',
-				},
-				{
-					title: 'Subprojeto 2',
-					type: 'file',
-					ext: 'pdf',
-				},
+import { BiChevronDown } from 'react-icons/bi';
+import { BsFolder } from 'react-icons/bs';
 
-				{
-					id: 'subfolder_3',
-					title: 'Subprojeto 3',
-					type: 'folder',
-					isOpen: false,
-					leaf: [
-						{
-							title: 'Subprojeto 3.1',
-							type: 'file',
-							ext: 'pdf',
-						},
-					],
-				},
-			],
+import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
+import type { TProjectSetting } from '@/modules/project';
+import { FILE_TYPES } from '@/shared/file-tipes';
+import { uuidv4 } from '@/shared/generate-uuid';
+
+import { Header, MainContainer, SideBar, Content, Folder, File, IconContainer } from './styles';
+
+type TProps = {
+	user: {
+		name: string;
+		email: string;
+	};
+	setting: {
+		name: string;
+	};
+	projectTree: TDataTree;
+};
+
+export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<{ props: TProps }> => {
+	const user = {
+		name: 'John Doe',
+		email: 'john.doe@mail.com',
+
+		projectId: 'project-123',
+	};
+
+	const staticFolderPath = resolve(process.cwd(), 'static', user.projectId);
+	const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
+
+	let setting!: TProjectSetting;
+	let rootFolders: Array<TDataTreeFolder> = [];
+	let rootFiles: Array<TDataTreeFile> = [];
+
+	for (const item of directoryInfo) {
+		if (item.isFile()) {
+			const fileExt = extname(item.name).slice(1);
+
+			// Get the project setting
+			if (item.name.match(new RegExp('setting.json', 'i'))) {
+				const settingContent = await readFileSync(resolve(staticFolderPath, 'setting.json'), 'utf-8');
+				setting = JSON.parse(settingContent);
+			}
+
+			// Ignore files that are not supported
+			if (!FILE_TYPES[fileExt]) continue;
+
+			const file: TDataTreeFile = {
+				id: uuidv4(),
+				title: item.name.replace(extname(item.name), ''),
+				type: 'file',
+				ext: fileExt,
+			};
+
+			rootFiles.push(file);
+		} else {
+			const folder: TDataTreeFolder = {
+				id: uuidv4(),
+				title: item.name,
+				type: 'folder',
+				isOpen: false,
+				leaf: [],
+			};
+
+			// Get files inside the current sub folder
+			const folderInfo = await readdirSync(resolve(staticFolderPath, item.name), { withFileTypes: true });
+
+			for (const leaf of folderInfo) {
+				const fileExt = extname(leaf.name).slice(1);
+
+				// Ignore files that are not supported
+				if (!FILE_TYPES[fileExt]) continue;
+
+				const file: TDataTreeFile = {
+					id: uuidv4(),
+					title: leaf.name.replace(extname(leaf.name), ''),
+					type: 'file',
+					ext: fileExt,
+				};
+
+				folder.leaf.push(file);
+			}
+
+			rootFolders.push(folder);
+		}
+	}
+
+	// Sort folders and files
+
+	rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
+	rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
+
+	return {
+		props: {
+			user,
+			setting,
+			projectTree: [...rootFolders, ...rootFiles],
 		},
-	]);
+	};
+};
+
+export default function Dashboard(props: TProps) {
+	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
+	const [user] = useState(props.user);
 
 	const handleFolderClick = (id: string) => {
-		const newData = data.map((item) => {
-			if (item.id === id) {
-				return {
-					...item,
-					isOpen: !item.isOpen,
-				};
-			} else {
+		const newData = projectTree.map((item) => {
+			if (item.type === 'folder') {
+				if (item.id === id) {
+					return {
+						...item,
+						isOpen: !item.isOpen,
+					};
+				}
+
 				return {
 					...item,
 					leaf: item.leaf.map((leaf) => {
-						if (leaf.id === id) {
+						if (leaf.type === 'folder' && leaf.id === id) {
 							return {
 								...leaf,
 								isOpen: !leaf.isOpen,
 							};
-						} else {
-							return leaf;
 						}
+
+						return leaf;
 					}),
 				};
 			}
+
+			return item;
 		});
 
-		setData(newData);
+		setProjectTree(newData);
 	};
 
-	const renderTree = (leaf: any) => {
+	const handleFileClick = (file: TDataTreeFile) => {
+		console.log(file);
+	};
+
+	const renderTree = (leaf: TDataTree[number]) => {
 		if (leaf.type === 'folder') {
 			return (
-				<div key={leaf.id} className={style.sidebar__folder}>
+				<Folder key={leaf.id} isOpen={leaf.isOpen} leafLength={leaf.leaf.length}>
 					<button
-						className={style.sidebar__folder_title}
+						className="folder__title"
 						onClick={(e) => {
 							e.stopPropagation();
 							handleFolderClick(leaf.id);
 						}}
 					>
-						<span className={style.sidebar__item_icon}>
+						<IconContainer>
 							<BsFolder size={20} />
-						</span>
+						</IconContainer>
 
 						{leaf.title}
 
-						<span className={style.sidebar__folder_arrow}>
+						<span className="arrow">
 							<BiChevronDown size={20} />
 						</span>
 					</button>
 
-					<div className={style.sidebar__folder_container}>
-						<div className={`${leaf.isOpen ? style.sidebar__folder_content : style.sidebar__folder_content_hidden}`}>
-							{leaf.leaf.map((item: any) => renderTree(item))}
-						</div>
+					<div className="folder__container">
+						<div className="folder__content">{leaf.leaf.map((item: any) => renderTree(item))}</div>
 					</div>
-				</div>
+				</Folder>
 			);
 		} else {
 			return (
-				<button
+				<File
 					key={leaf.id}
-					className={style.sidebar__file}
 					onClick={(e) => {
 						e.stopPropagation();
+						handleFileClick(leaf);
 					}}
 				>
-					<span className={style.sidebar__item_icon}>
-						<BsFiletypePdf size={20} />
-					</span>
+					<IconContainer>
+						{(() => {
+							const Icon = FILE_TYPES[leaf.ext];
+
+							return <Icon size={20} />;
+						})()}
+					</IconContainer>
 					{leaf.title}.{leaf.ext}
-				</button>
+				</File>
 			);
 		}
 	};
 
 	return (
 		<>
-			<header className={style.header}>
+			<Header>
 				<div>Logo</div>
 
-				<div>User</div>
-			</header>
+				<div>
+					<strong>{user.name}</strong>
+				</div>
+			</Header>
 
-			<main className={style.main}>
-				<div className={style.sidebar}>{data.map((item) => renderTree(item))}</div>
+			<MainContainer>
+				<SideBar>{projectTree.map((item) => renderTree(item))}</SideBar>
 
-				<div className={style.content}></div>
-			</main>
+				<Content></Content>
+			</MainContainer>
 		</>
 	);
 }
