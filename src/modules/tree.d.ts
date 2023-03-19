@@ -3,6 +3,7 @@ export type TDataTreeFile = {
 	title: string;
 	type: 'file';
 	ext: string;
+	path: string;
 };
 
 export type TDataTreeFolder = {
@@ -11,6 +12,7 @@ export type TDataTreeFolder = {
 	type: 'folder';
 	isOpen: boolean;
 	leaf: TDataTree;
+	path: string;
 };
 
 export type TDataTree = Array<TDataTreeFolder | TDataTreeFile>;

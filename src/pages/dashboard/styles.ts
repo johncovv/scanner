@@ -18,18 +18,36 @@ export const MainContainer = styled.div`
 	height: calc(100vh - ${config.header.height});
 
 	display: grid;
-	grid-template-columns: 2fr 6fr;
-
-	& > * {
-		border: 1px solid black;
-	}
+	grid-template-columns: 3fr 8fr;
 `;
 
 export const SideBar = styled.aside`
+	box-shadow: inset 0 0.5rem 1.5rem rgba(67, 67, 67, 0.1);
+	padding: 0.5rem;
 	height: 100%;
+	border-radius: 5px;
 
 	& *:first-child {
 		margin-top: 0 !important;
+	}
+
+	& > * {
+		margin-top: 0 !important;
+	}
+`;
+
+export const Content = styled.main`
+	margin-left: 1.5rem;
+	height: 100%;
+
+	background-color: #434343;
+	border-radius: 5px;
+
+	iframe {
+		display: block;
+		width: 100%;
+		height: 100%;
+		border: none;
 	}
 `;
 
@@ -39,16 +57,10 @@ type FolderProps = {
 };
 
 export const Folder = styled.div<FolderProps>`
-	& .arrow {
-		position: absolute;
-		top: 50%;
-		transform: translateY(-50%);
-		right: 1rem;
-	}
-
 	& .folder__title {
 		position: relative;
-		background-color: rgb(134, 134, 134);
+		background-color: #4096ff;
+		color: #fff;
 		padding: 1rem;
 		padding-left: 3rem;
 		border-radius: 5px;
@@ -60,8 +72,27 @@ export const Folder = styled.div<FolderProps>`
 		display: flex;
 		justify-content: space-between;
 
+		transition: filter 100ms ease-in-out;
 		&:hover {
-			background-color: rgb(114, 114, 114);
+			filter: brightness(1.1);
+		}
+
+		&[disabled] {
+			pointer-events: none;
+			background-color: #595959;
+			opacity: 0.5;
+
+			& .arrow {
+				display: none;
+			}
+		}
+
+		& .arrow {
+			position: absolute;
+			right: 1rem;
+			top: 25%;
+			transition: transform 200ms ease-in-out;
+			transform: rotateX(${({ isOpen }) => (isOpen ? '0' : '180deg')});
 		}
 	}
 
@@ -75,13 +106,17 @@ export const Folder = styled.div<FolderProps>`
 		overflow: hidden;
 		padding-top: 0.5rem;
 
-		height: ${({ isOpen, leafLength }) => (isOpen ? `calc(${leafLength} * (47px + 0.5rem))` : '0')};
+		height: ${({ isOpen, leafLength }) => (isOpen ? `calc(${leafLength} * (47px + 0.5rem) + 0.5rem)` : '0')};
 	}
 `;
 
-export const File = styled.button`
+type FileProps = {
+	isSelected: boolean;
+};
+
+export const File = styled.button<FileProps>`
 	position: relative;
-	background-color: rgb(190, 190, 190);
+	background-color: #d9d9d9;
 	padding: 1rem;
 	padding-left: 3rem;
 	border-radius: 5px;
@@ -93,9 +128,18 @@ export const File = styled.button`
 	display: flex;
 	justify-content: space-between;
 
+	transition: filter 100ms ease-in;
 	&:hover {
-		background-color: rgb(170, 170, 170);
+		filter: brightness(0.85);
 	}
+
+	${({ isSelected }) => {
+		if (isSelected) {
+			return css`
+				background-color: #91caff;
+			`;
+		}
+	}}
 `;
 
 export const IconContainer = styled.span`
@@ -103,9 +147,4 @@ export const IconContainer = styled.span`
 	top: 50%;
 	transform: translateY(-50%);
 	left: 1rem;
-`;
-
-export const Content = styled.main`
-	margin-left: 1.5rem;
-	height: 100%;
 `;

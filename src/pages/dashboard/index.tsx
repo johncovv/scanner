@@ -21,6 +21,7 @@ type TProps = {
 	setting: {
 		name: string;
 	};
+	projectId: string;
 	projectTree: TDataTree;
 };
 
@@ -57,6 +58,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 				title: item.name.replace(extname(item.name), ''),
 				type: 'file',
 				ext: fileExt,
+				path: resolve(staticFolderPath, item.name),
 			};
 
 			rootFiles.push(file);
@@ -67,6 +69,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 				type: 'folder',
 				isOpen: false,
 				leaf: [],
+				path: resolve(staticFolderPath, item.name),
 			};
 
 			// Get files inside the current sub folder
@@ -83,6 +86,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 					title: leaf.name.replace(extname(leaf.name), ''),
 					type: 'file',
 					ext: fileExt,
+					path: resolve(staticFolderPath, item.name, leaf.name),
 				};
 
 				folder.leaf.push(file);
@@ -101,6 +105,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 		props: {
 			user,
 			setting,
+			projectId: user.projectId,
 			projectTree: [...rootFolders, ...rootFiles],
 		},
 	};
@@ -109,6 +114,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 export default function Dashboard(props: TProps) {
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
 	const [user] = useState(props.user);
+
+	const [iframeFile, setIframeFile] = useState<TDataTreeFile | null>(null);
 
 	const handleFolderClick = (id: string) => {
 		const newData = projectTree.map((item) => {
@@ -142,7 +149,7 @@ export default function Dashboard(props: TProps) {
 	};
 
 	const handleFileClick = (file: TDataTreeFile) => {
-		console.log(file);
+		setIframeFile(file);
 	};
 
 	const renderTree = (leaf: TDataTree[number]) => {
@@ -151,6 +158,7 @@ export default function Dashboard(props: TProps) {
 				<Folder key={leaf.id} isOpen={leaf.isOpen} leafLength={leaf.leaf.length}>
 					<button
 						className="folder__title"
+						disabled={leaf.leaf.length === 0}
 						onClick={(e) => {
 							e.stopPropagation();
 							handleFolderClick(leaf.id);
@@ -176,6 +184,7 @@ export default function Dashboard(props: TProps) {
 			return (
 				<File
 					key={leaf.id}
+					isSelected={iframeFile?.id === leaf.id}
 					onClick={(e) => {
 						e.stopPropagation();
 						handleFileClick(leaf);
@@ -207,7 +216,11 @@ export default function Dashboard(props: TProps) {
 			<MainContainer>
 				<SideBar>{projectTree.map((item) => renderTree(item))}</SideBar>
 
-				<Content></Content>
+				<Content>
+					{iframeFile && (
+						<iframe src={`/api/static/${encodeURIComponent(props.projectId)}/${encodeURIComponent(iframeFile.path)}`} />
+					)}
+				</Content>
 			</MainContainer>
 		</>
 	);

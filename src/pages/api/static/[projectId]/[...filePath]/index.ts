@@ -4,11 +4,11 @@ import { resolve } from 'path';
 import * as mime from 'mime';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { projectId, file } = req.query;
+	const { projectId, filePath } = req.query as { projectId: string; filePath: string[] };
 
 	// getting file path
 
-	const staticFolderPath = resolve(process.cwd(), 'static', projectId as string, file as string);
+	const staticFolderPath = resolve(process.cwd(), 'static', projectId, ...filePath);
 
 	// getting file stats and mime type
 
@@ -17,9 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	// setting headers
 
+	const fileName = filePath[filePath.length - 1];
+
 	res.writeHead(200, {
 		'Content-Type': mimeType,
-		'Content-Disposition': `inline; filename=${file}`,
+		'Content-Disposition': `inline; filename=${fileName}`,
 		'Content-Length': stat.size,
 	});
 
