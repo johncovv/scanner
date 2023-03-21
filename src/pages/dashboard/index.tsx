@@ -7,26 +7,22 @@ import { BiChevronDown } from 'react-icons/bi';
 import { BsFolder } from 'react-icons/bs';
 
 import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
-import type { TProjectSetting } from '@/modules/project';
+import type { TProjectSetting, TProjectSettingComplete } from '@/modules/project';
 import { FILE_TYPES } from '@/shared/file-tipes';
 import { uuidv4 } from '@/shared/generate-uuid';
+import { TPublicUser } from '@/@types/iron-session';
 
 import { Header, MainContainer, SideBar, Content, Folder, File, IconContainer } from './styles';
 
 type TProps = {
-	user: {
-		name: string;
-		email: string;
-	};
-	setting: {
-		name: string;
-	};
+	user: TPublicUser;
+	setting: TProjectSetting;
 	projectId: string;
 	projectTree: TDataTree;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<{ props: TProps }> => {
-	const user = {
+	const user: TPublicUser = {
 		name: 'John Doe',
 		email: 'john.doe@mail.com',
 
@@ -47,7 +43,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext): Pr
 			// Get the project setting
 			if (item.name.match(new RegExp('setting.json', 'i'))) {
 				const settingContent = await readFileSync(resolve(staticFolderPath, 'setting.json'), 'utf-8');
-				setting = JSON.parse(settingContent);
+				const { owner: _, ...settingData } = JSON.parse(settingContent) as TProjectSettingComplete;
+
+				setting = settingData;
 			}
 
 			// Ignore files that are not supported
