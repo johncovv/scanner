@@ -1,14 +1,28 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { statSync, createReadStream } from 'fs';
+import getConfig from 'next/config';
 import { resolve } from 'path';
 import * as mime from 'mime';
+
+import { TProjectSettingComplete } from '@/modules/project';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { projectId, filePath } = req.query as { projectId: string; filePath: string[] };
 
+	// get next config
+
+	const { serverRuntimeConfig } = getConfig();
+	const { projectsList } = serverRuntimeConfig as { projectsList: Array<TProjectSettingComplete> };
+
+	const targetProject = projectsList.find((project) => project.id === projectId);
+
+	if (!targetProject) {
+		return res.status(404).send({ ok: false, error: 'project not found' });
+	}
+
 	// getting file path
 
-	const staticFolderPath = resolve(process.cwd(), 'static', projectId, ...filePath);
+	const staticFolderPath = resolve(process.cwd(), 'static', targetProject.folder_name, ...filePath);
 
 	// getting file stats and mime type
 

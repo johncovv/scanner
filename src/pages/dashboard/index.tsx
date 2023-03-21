@@ -1,115 +1,130 @@
+import { withIronSessionSsr } from 'iron-session/next';
 import { GetServerSidePropsContext } from 'next';
 import { resolve, extname } from 'path';
-import { readdirSync, readFileSync } from 'fs';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import getConfig from 'next/config';
+import { readdirSync } from 'fs';
 
 import { BiChevronDown } from 'react-icons/bi';
 import { BsFolder } from 'react-icons/bs';
+import { useState } from 'react';
 
 import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
-import type { TProjectSetting, TProjectSettingComplete } from '@/modules/project';
+import type { TProjectSetting } from '@/modules/project';
+import { TPublicUser } from '@/@types/iron-session';
 import { FILE_TYPES } from '@/shared/file-tipes';
 import { uuidv4 } from '@/shared/generate-uuid';
-import { TPublicUser } from '@/@types/iron-session';
+import { environment } from '@/config/env';
 
 import { Header, MainContainer, SideBar, Content, Folder, File, IconContainer } from './styles';
 
 type TProps = {
-	user: TPublicUser;
-	setting: TProjectSetting;
-	projectId: string;
+	user: Pick<TPublicUser, 'email' | 'name'>;
+	project: {
+		id: string;
+		name: string;
+	};
 	projectTree: TDataTree;
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext): Promise<{ props: TProps }> => {
-	const user: TPublicUser = {
-		name: 'John Doe',
-		email: 'john.doe@mail.com',
+export const getServerSideProps = withIronSessionSsr(
+	async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: TProps }> {
+		const user: TPublicUser = context.req.session.user!;
 
-		projectId: 'project-123',
-	};
+		const { serverRuntimeConfig } = getConfig();
+		const { projectsList } = serverRuntimeConfig;
 
-	const staticFolderPath = resolve(process.cwd(), 'static', user.projectId);
-	const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
+		const targetProject = projectsList.find((project: TProjectSetting) => project.id === user.projectId);
 
-	let setting!: TProjectSetting;
-	let rootFolders: Array<TDataTreeFolder> = [];
-	let rootFiles: Array<TDataTreeFile> = [];
+		if (!targetProject) throw new Error('Project not found');
 
-	for (const item of directoryInfo) {
-		if (item.isFile()) {
-			const fileExt = extname(item.name).slice(1);
+		const staticFolderPath = resolve(process.cwd(), 'static', targetProject.folder_name);
+		const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
 
-			// Get the project setting
-			if (item.name.match(new RegExp('setting.json', 'i'))) {
-				const settingContent = await readFileSync(resolve(staticFolderPath, 'setting.json'), 'utf-8');
-				const { owner: _, ...settingData } = JSON.parse(settingContent) as TProjectSettingComplete;
+		let rootFolders: Array<TDataTreeFolder> = [];
+		let rootFiles: Array<TDataTreeFile> = [];
 
-				setting = settingData;
-			}
+		for (const item of directoryInfo) {
+			if (item.isFile()) {
+				const fileExt = extname(item.name).slice(1);
 
-			// Ignore files that are not supported
-			if (!FILE_TYPES[fileExt]) continue;
-
-			const file: TDataTreeFile = {
-				id: uuidv4(),
-				title: item.name.replace(extname(item.name), ''),
-				type: 'file',
-				ext: fileExt,
-				path: resolve(staticFolderPath, item.name),
-			};
-
-			rootFiles.push(file);
-		} else {
-			const folder: TDataTreeFolder = {
-				id: uuidv4(),
-				title: item.name,
-				type: 'folder',
-				isOpen: false,
-				leaf: [],
-				path: resolve(staticFolderPath, item.name),
-			};
-
-			// Get files inside the current sub folder
-			const folderInfo = await readdirSync(resolve(staticFolderPath, item.name), { withFileTypes: true });
-
-			for (const leaf of folderInfo) {
-				const fileExt = extname(leaf.name).slice(1);
+				// skip setting.json
+				if (item.name.match(new RegExp('setting.json', 'i'))) continue;
 
 				// Ignore files that are not supported
 				if (!FILE_TYPES[fileExt]) continue;
 
 				const file: TDataTreeFile = {
 					id: uuidv4(),
-					title: leaf.name.replace(extname(leaf.name), ''),
+					title: item.name.replace(extname(item.name), ''),
 					type: 'file',
 					ext: fileExt,
-					path: resolve(staticFolderPath, item.name, leaf.name),
+					path: encodeURIComponent(item.name),
 				};
 
-				folder.leaf.push(file);
+				rootFiles.push(file);
+			} else {
+				const folder: TDataTreeFolder = {
+					id: uuidv4(),
+					title: item.name,
+					type: 'folder',
+					isOpen: false,
+					leaf: [],
+					path: encodeURIComponent(item.name),
+				};
+
+				// Get files inside the current sub folder
+				const folderInfo = await readdirSync(resolve(staticFolderPath, item.name), { withFileTypes: true });
+
+				for (const leaf of folderInfo) {
+					const fileExt = extname(leaf.name).slice(1);
+
+					// Ignore files that are not supported
+					if (!FILE_TYPES[fileExt]) continue;
+
+					const file: TDataTreeFile = {
+						id: uuidv4(),
+						title: leaf.name.replace(extname(leaf.name), ''),
+						type: 'file',
+						ext: fileExt,
+						path: [encodeURIComponent(item.name), encodeURIComponent(leaf.name)].join('/'),
+					};
+
+					folder.leaf.push(file);
+				}
+
+				rootFolders.push(folder);
 			}
-
-			rootFolders.push(folder);
 		}
-	}
 
-	// Sort folders and files
+		// Sort folders and files
 
-	rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
-	rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
+		rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
+		rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
 
-	return {
-		props: {
-			user,
-			setting,
-			projectId: user.projectId,
-			projectTree: [...rootFolders, ...rootFiles],
+		return {
+			props: {
+				user: { name: user.name, email: user.email },
+				project: {
+					id: targetProject.id,
+					name: targetProject.name,
+				},
+				projectTree: [...rootFolders, ...rootFiles],
+			},
+		};
+	},
+	{
+		cookieName: environment.passport.cookie_name,
+		password: environment.passport.password,
+		cookieOptions: {
+			secure: process.env.NODE_ENV === 'production',
 		},
-	};
-};
+	}
+);
 
 export default function Dashboard(props: TProps) {
+	const router = useRouter();
+
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
 	const [user] = useState(props.user);
 
@@ -201,24 +216,31 @@ export default function Dashboard(props: TProps) {
 		}
 	};
 
+	const handleLogout = async () => {
+		const res = await fetch('/api/logout', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+
+		if (res.ok) router.push('/login');
+	};
+
 	return (
 		<>
 			<Header>
 				<div>Logo</div>
 
 				<div>
-					<strong>{user.name}</strong>
+					<strong>{user.name}</strong> | <a onClick={handleLogout}>Sair</a>
 				</div>
 			</Header>
 
 			<MainContainer>
 				<SideBar>{projectTree.map((item) => renderTree(item))}</SideBar>
 
-				<Content>
-					{iframeFile && (
-						<iframe src={`/api/static/${encodeURIComponent(props.projectId)}/${encodeURIComponent(iframeFile.path)}`} />
-					)}
-				</Content>
+				<Content>{iframeFile && <iframe src={`/api/static/${props.project.id}/${iframeFile.path}`} />}</Content>
 			</MainContainer>
 		</>
 	);

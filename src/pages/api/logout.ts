@@ -9,7 +9,7 @@ export default withIronSessionApiRoute(
 		}
 
 		req.session.destroy();
-		res.send({ ok: true });
+		return res.status(200).send({ ok: true });
 	},
 	{
 		cookieName: environment.passport.cookie_name,

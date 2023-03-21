@@ -1,7 +1,8 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
+import getConfig from 'next/config';
 
-import type { TUser } from '@/@types/iron-session.d';
 import { environment } from '@/config/env';
+import { TProjectSettingComplete } from '../../modules/project';
 
 export default withIronSessionApiRoute(
 	async function loginRoute(req, res) {
@@ -11,27 +12,31 @@ export default withIronSessionApiRoute(
 
 		const { email, password } = await req.body;
 
-		const mockUser: TUser = {
-			email: 'user@mail.com',
-			password: 'password',
-			name: 'John Doe',
-			projectId: 'project-123',
-		};
+		const { serverRuntimeConfig } = getConfig();
+		const { projectsList } = serverRuntimeConfig as { projectsList: Array<TProjectSettingComplete> };
+
+		const targetProject = projectsList.find((project) => project.owner.email === email);
+
+		if (!targetProject) {
+			return res.status(401).send({ ok: false, error: 'email/password is incorrect' });
+		}
 
 		// check if the email and password are correct
 
-		const emailIsCorrect = email === mockUser.email;
-		const passwordIsCorrect = password === mockUser.password;
+		const emailIsCorrect = email === targetProject.owner.email;
+		const passwordIsCorrect = password === targetProject.owner.password;
 
 		if (!passwordIsCorrect || !emailIsCorrect) {
 			return res.status(401).send({ ok: false, error: 'email/password is incorrect' });
 		}
 
-		// get user from database then:
-		req.session.user = mockUser;
+		const { password: _, ...user } = targetProject.owner;
+
+		// set the user in the session
+		req.session.user = Object.assign(user, { projectId: targetProject.id });
 
 		await req.session.save();
-		return res.send({ ok: true });
+		return res.status(200).send({ ok: true });
 	},
 	{
 		cookieName: environment.passport.cookie_name,
