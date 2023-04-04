@@ -4,7 +4,7 @@ const fs = require('fs');
 async function startup() {
 	const projectsList = await fs.promises.readdir('./static', { withFileTypes: true });
 
-	const validFiles = [];
+	const validFolders = [];
 
 	for (const project of projectsList) {
 		if (!project.isDirectory()) continue;
@@ -12,7 +12,23 @@ async function startup() {
 		try {
 			// getting the project setting file
 
-			const settingFile = await fs.promises.readFile(`./static/${project.name}/setting.json`, 'utf8');
+			let settingFile = null;
+
+			try {
+				settingFile = await fs.promises.readFile(`./static/${project.name}/setting.json`, 'utf8');
+			} catch (error) {
+				const newSetting = {
+					id: uuid(),
+					name: project.name,
+					folder_name: project.name,
+				};
+
+				const stringifiedSetting = JSON.stringify(newSetting, null, 2);
+				await fs.promises.writeFile(`./static/${project.name}/setting.json`, stringifiedSetting, 'utf8');
+
+				settingFile = stringifiedSetting;
+			}
+
 			const setting = JSON.parse(settingFile);
 			if (!setting.owner?.email || !setting.owner?.password || !setting.name) continue;
 
@@ -26,13 +42,13 @@ async function startup() {
 
 			// if the project settings is valid then push it to the validFiles array
 
-			validFiles.push({ ...setting, folder_name: project.name });
+			validFolders.push({ ...setting, folder_name: project.name });
 		} catch (error) {
 			continue;
 		}
 	}
 
-	return validFiles;
+	return validFolders;
 }
 
 module.exports = { startup };
