@@ -16,9 +16,13 @@ async function startup() {
 			const setting = JSON.parse(settingFile);
 			if (!setting.owner?.email || !setting.owner?.password || !setting.name) continue;
 
-			// setting the project id
+			// if the setting file doesn't have an id then create one and save it to the file
 
-			setting.id = uuid();
+			if (!setting.id) {
+				setting.id = uuid();
+
+				await fs.promises.writeFile(`./static/${project.name}/setting.json`, JSON.stringify(setting, null, 2), 'utf8');
+			}
 
 			// if the project settings is valid then push it to the validFiles array
 

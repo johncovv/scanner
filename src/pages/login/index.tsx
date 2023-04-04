@@ -1,7 +1,9 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import Image from 'next/image';
 
-import { MainContainer, Form, InputControl, SubmitButton } from './styles';
+import Logo from '@/assets/completed-logo.png';
+import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from '@/styles/login.style';
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -19,7 +21,7 @@ export default function LoginPage() {
 
 		// send the post request to the server
 
-		const response = await fetch('http://localhost:3000/api/login', {
+		const response = await fetch('/api/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -39,6 +41,14 @@ export default function LoginPage() {
 
 	return (
 		<MainContainer>
+			<div data-color></div>
+			<div data-color></div>
+			<div data-color></div>
+
+			<LogoContainer>
+				<Image src={Logo} alt="the website logo" />
+			</LogoContainer>
+
 			<Form onSubmit={onSubmit}>
 				<InputControl>
 					<label htmlFor="email">Email</label>
@@ -67,7 +77,7 @@ export default function LoginPage() {
 					/>
 				</InputControl>
 
-				<SubmitButton type="submit">Login</SubmitButton>
+				<SubmitButton type="submit">Entrar</SubmitButton>
 			</Form>
 		</MainContainer>
 	);

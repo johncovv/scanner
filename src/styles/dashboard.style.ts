@@ -1,4 +1,4 @@
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 const config = {
 	header: {
@@ -12,6 +12,39 @@ export const Header = styled.header`
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+
+	div[data-user] {
+		display: flex;
+		align-items: center;
+
+		& > div {
+			display: inline-flex;
+			align-items: center;
+			margin-left: 1rem;
+		}
+	}
+
+	a[data-logout] {
+		display: inline-flex;
+		align-items: center;
+
+		font-weight: bold;
+		color: #f5222d;
+
+		svg {
+			margin-right: 0.1rem;
+		}
+	}
+`;
+
+export const HeaderLogoContainer = styled.div`
+	padding: 0.4rem 0;
+	height: 100%;
+
+	& > img {
+		height: 100%;
+		width: auto;
+	}
 `;
 
 export const MainContainer = styled.div`
@@ -19,6 +52,7 @@ export const MainContainer = styled.div`
 
 	display: grid;
 	grid-template-columns: 3fr 8fr;
+	padding: 1.5rem 0;
 `;
 
 export const SideBar = styled.aside`
@@ -59,7 +93,7 @@ type FolderProps = {
 export const Folder = styled.div<FolderProps>`
 	& .folder__title {
 		position: relative;
-		background-color: #4096ff;
+		background-color: #24a8e0;
 		color: #fff;
 		padding: 1rem;
 		padding-left: 3rem;
@@ -72,9 +106,9 @@ export const Folder = styled.div<FolderProps>`
 		display: flex;
 		justify-content: space-between;
 
-		transition: filter 100ms ease-in-out;
+		transition: background-color 100ms ease-in-out;
 		&:hover {
-			filter: brightness(1.1);
+			background-color: #166eae;
 		}
 
 		&[disabled] {
@@ -130,13 +164,13 @@ export const File = styled.button<FileProps>`
 
 	transition: filter 100ms ease-in;
 	&:hover {
-		filter: brightness(0.85);
+		filter: brightness(0.9);
 	}
 
 	${({ isSelected }) => {
 		if (isSelected) {
 			return css`
-				background-color: #91caff;
+				box-shadow: inset 0 0 0 2px #24a8e0;
 			`;
 		}
 	}}

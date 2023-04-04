@@ -9,6 +9,7 @@ import {
 	BsFiletypeMp3,
 	BsFiletypeXlsx,
 	BsFiletypePng,
+	BsFiletypeJpg,
 	BsFiletypeGif,
 } from 'react-icons/bs';
 
@@ -24,5 +25,7 @@ export const FILE_TYPES: {
 	mp4: BsFiletypeMp4,
 	mp3: BsFiletypeMp3,
 	png: BsFiletypePng,
+	jpg: BsFiletypeJpg,
+	jpeg: BsFiletypeJpg,
 	gif: BsFiletypeGif,
 };

@@ -1,22 +1,33 @@
 import { withIronSessionSsr } from 'iron-session/next';
 import { GetServerSidePropsContext } from 'next';
+import Image from 'next/image';
 import { resolve, extname } from 'path';
 import { useRouter } from 'next/router';
 import getConfig from 'next/config';
 import { readdirSync } from 'fs';
 
 import { BiChevronDown } from 'react-icons/bi';
+import { IoMdExit } from 'react-icons/io';
 import { BsFolder } from 'react-icons/bs';
 import { useState } from 'react';
 
+import Logo from '@/assets/logo-without-text.png';
+import {
+	Header,
+	HeaderLogoContainer,
+	MainContainer,
+	SideBar,
+	Content,
+	Folder,
+	File,
+	IconContainer,
+} from '@/styles/dashboard.style';
 import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
 import type { TProjectSetting } from '@/modules/project';
 import { TPublicUser } from '@/@types/iron-session';
 import { FILE_TYPES } from '@/shared/file-tipes';
-import { uuidv4 } from '@/shared/generate-uuid';
+import { uuid } from '@/shared/generate-uuid';
 import { environment } from '@/config/env';
-
-import { Header, MainContainer, SideBar, Content, Folder, File, IconContainer } from './styles';
 
 type TProps = {
 	user: Pick<TPublicUser, 'email' | 'name'>;
@@ -55,7 +66,7 @@ export const getServerSideProps = withIronSessionSsr(
 				if (!FILE_TYPES[fileExt]) continue;
 
 				const file: TDataTreeFile = {
-					id: uuidv4(),
+					id: uuid(),
 					title: item.name.replace(extname(item.name), ''),
 					type: 'file',
 					ext: fileExt,
@@ -65,7 +76,7 @@ export const getServerSideProps = withIronSessionSsr(
 				rootFiles.push(file);
 			} else {
 				const folder: TDataTreeFolder = {
-					id: uuidv4(),
+					id: uuid(),
 					title: item.name,
 					type: 'folder',
 					isOpen: false,
@@ -83,7 +94,7 @@ export const getServerSideProps = withIronSessionSsr(
 					if (!FILE_TYPES[fileExt]) continue;
 
 					const file: TDataTreeFile = {
-						id: uuidv4(),
+						id: uuid(),
 						title: leaf.name.replace(extname(leaf.name), ''),
 						type: 'file',
 						ext: fileExt,
@@ -229,15 +240,23 @@ export default function Dashboard(props: TProps) {
 
 	return (
 		<>
-			<Header>
-				<div>Logo</div>
+			<Header data-container>
+				<HeaderLogoContainer>
+					<Image src={Logo} alt="The website logo" />
+				</HeaderLogoContainer>
 
-				<div>
-					<strong>{user.name}</strong> | <a onClick={handleLogout}>Sair</a>
+				<div data-user>
+					<div>{user.name}</div>
+					<div>|</div>
+					<div>
+						<a onClick={handleLogout} data-logout>
+							<IoMdExit /> <span>Sair</span>
+						</a>
+					</div>
 				</div>
 			</Header>
 
-			<MainContainer>
+			<MainContainer data-container>
 				<SideBar>{projectTree.map((item) => renderTree(item))}</SideBar>
 
 				<Content>{iframeFile && <iframe src={`/api/static/${props.project.id}/${iframeFile.path}`} />}</Content>
