@@ -61,11 +61,7 @@ export const SideBar = styled.aside`
 	height: 100%;
 	border-radius: 5px;
 
-	& *:first-child {
-		margin-top: 0 !important;
-	}
-
-	& > * {
+	& > [data-folder]:first-child > button {
 		margin-top: 0 !important;
 	}
 `;
@@ -87,7 +83,6 @@ export const Content = styled.main`
 
 type FolderProps = {
 	isOpen: boolean;
-	leafLength: number;
 };
 
 export const Folder = styled.div<FolderProps>`
@@ -126,7 +121,7 @@ export const Folder = styled.div<FolderProps>`
 			right: 1rem;
 			top: 25%;
 			transition: transform 200ms ease-in-out;
-			transform: rotateX(${({ isOpen }) => (isOpen ? '0' : '180deg')});
+			transform: ${({ isOpen }) => (isOpen ? 'rotateX(0)' : 'rotateX(180deg) !important')};
 		}
 	}
 
@@ -138,9 +133,8 @@ export const Folder = styled.div<FolderProps>`
 		transition: 200ms ease-in-out;
 		position: relative;
 		overflow: hidden;
-		padding-top: 0.5rem;
 
-		height: ${({ isOpen, leafLength }) => (isOpen ? `calc(${leafLength} * (47px + 0.5rem) + 0.5rem)` : '0')};
+		height: ${({ isOpen }) => (isOpen ? 'auto' : '0 !important')};
 	}
 `;
 

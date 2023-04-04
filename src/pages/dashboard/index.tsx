@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { resolve, extname } from 'path';
 import { useRouter } from 'next/router';
 import getConfig from 'next/config';
-import { readdirSync } from 'fs';
+import { Dirent, readdirSync } from 'fs';
 
 import { BiChevronDown } from 'react-icons/bi';
 import { IoMdExit } from 'react-icons/io';
@@ -23,10 +23,10 @@ import {
 	IconContainer,
 } from '@/styles/dashboard.style';
 import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
+import { handleFile, handleFolder } from '@/shared/handles';
 import type { TProjectSetting } from '@/modules/project';
 import { TPublicUser } from '@/@types/iron-session';
 import { FILE_TYPES } from '@/shared/file-tipes';
-import { uuid } from '@/shared/generate-uuid';
 import { environment } from '@/config/env';
 
 type TProps = {
@@ -57,54 +57,11 @@ export const getServerSideProps = withIronSessionSsr(
 
 		for (const item of directoryInfo) {
 			if (item.isFile()) {
-				const fileExt = extname(item.name).slice(1);
-
-				// skip setting.json
-				if (item.name.match(new RegExp('setting.json', 'i'))) continue;
-
-				// Ignore files that are not supported
-				if (!FILE_TYPES[fileExt]) continue;
-
-				const file: TDataTreeFile = {
-					id: uuid(),
-					title: item.name.replace(extname(item.name), ''),
-					type: 'file',
-					ext: fileExt,
-					path: encodeURIComponent(item.name),
-				};
-
-				rootFiles.push(file);
+				const file = await handleFile(item);
+				if (file) rootFiles.push(file);
 			} else {
-				const folder: TDataTreeFolder = {
-					id: uuid(),
-					title: item.name,
-					type: 'folder',
-					isOpen: false,
-					leaf: [],
-					path: encodeURIComponent(item.name),
-				};
-
-				// Get files inside the current sub folder
-				const folderInfo = await readdirSync(resolve(staticFolderPath, item.name), { withFileTypes: true });
-
-				for (const leaf of folderInfo) {
-					const fileExt = extname(leaf.name).slice(1);
-
-					// Ignore files that are not supported
-					if (!FILE_TYPES[fileExt]) continue;
-
-					const file: TDataTreeFile = {
-						id: uuid(),
-						title: leaf.name.replace(extname(leaf.name), ''),
-						type: 'file',
-						ext: fileExt,
-						path: [encodeURIComponent(item.name), encodeURIComponent(leaf.name)].join('/'),
-					};
-
-					folder.leaf.push(file);
-				}
-
-				rootFolders.push(folder);
+				const folder = await handleFolder(item, staticFolderPath);
+				if (folder) rootFolders.push(folder);
 			}
 		}
 
@@ -141,35 +98,29 @@ export default function Dashboard(props: TProps) {
 
 	const [iframeFile, setIframeFile] = useState<TDataTreeFile | null>(null);
 
-	const handleFolderClick = (id: string) => {
-		const newData = projectTree.map((item) => {
+	const toggleFolder = (id: string, tree: TDataTree): TDataTree => {
+		return tree.map((item) => {
 			if (item.type === 'folder') {
 				if (item.id === id) {
 					return {
 						...item,
 						isOpen: !item.isOpen,
 					};
+				} else {
+					return {
+						...item,
+						leaf: toggleFolder(id, item.leaf),
+					};
 				}
-
-				return {
-					...item,
-					leaf: item.leaf.map((leaf) => {
-						if (leaf.type === 'folder' && leaf.id === id) {
-							return {
-								...leaf,
-								isOpen: !leaf.isOpen,
-							};
-						}
-
-						return leaf;
-					}),
-				};
+			} else {
+				return item;
 			}
-
-			return item;
 		});
+	};
 
-		setProjectTree(newData);
+	const handleFolderClick = (id: string) => {
+		const newTree = toggleFolder(id, projectTree);
+		setProjectTree(newTree);
 	};
 
 	const handleFileClick = (file: TDataTreeFile) => {
@@ -179,7 +130,7 @@ export default function Dashboard(props: TProps) {
 	const renderTree = (leaf: TDataTree[number]) => {
 		if (leaf.type === 'folder') {
 			return (
-				<Folder key={leaf.id} isOpen={leaf.isOpen} leafLength={leaf.leaf.length}>
+				<Folder key={leaf.id} isOpen={leaf.isOpen} data-folder data-open={leaf.isOpen}>
 					<button
 						className="folder__title"
 						disabled={leaf.leaf.length === 0}
