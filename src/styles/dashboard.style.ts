@@ -1,8 +1,8 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from "styled-components";
 
 const config = {
 	header: {
-		height: '58px',
+		height: "58px",
 	},
 };
 
@@ -146,12 +146,24 @@ export const Folder = styled.div<FolderProps>`
 			right: 1rem;
 			top: 25%;
 			transition: transform 200ms ease-in-out;
-			transform: ${({ isOpen }) => (isOpen ? 'rotateX(0)' : 'rotateX(180deg) !important')};
+			transform: ${({ isOpen }) => (isOpen ? "rotateX(0)" : "rotateX(180deg) !important")};
 		}
 	}
 
 	& .folder__container {
-		margin-left: 1rem;
+		position: relative;
+		padding-left: 1rem;
+
+		&::before {
+			content: "";
+			display: ${({ isOpen }) => (isOpen ? "block" : "none !important")};
+
+			position: absolute;
+			top: 0.5rem;
+			left: 0;
+			bottom: 0;
+			border: 1px dashed rgba(0, 0, 0, 0.1);
+		}
 	}
 
 	& .folder__content {
@@ -159,7 +171,7 @@ export const Folder = styled.div<FolderProps>`
 		position: relative;
 		overflow: hidden;
 
-		height: ${({ isOpen }) => (isOpen ? 'auto' : '0 !important')};
+		height: ${({ isOpen }) => (isOpen ? "auto" : "0 !important")};
 	}
 `;
 
