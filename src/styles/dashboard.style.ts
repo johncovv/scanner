@@ -7,8 +7,14 @@ const config = {
 };
 
 export const Header = styled.header`
+	background: linear-gradient(to left, #60bcd5, #24a3da 25%);
 	height: ${config.header.height};
+	margin-bottom: 1.5rem;
+`;
 
+export const HeaderContainer = styled.div`
+	width: 100%;
+	height: 100%;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -16,6 +22,7 @@ export const Header = styled.header`
 	div[data-user] {
 		display: flex;
 		align-items: center;
+		color: #ffffff;
 
 		& > div {
 			display: inline-flex;
@@ -28,18 +35,27 @@ export const Header = styled.header`
 		display: inline-flex;
 		align-items: center;
 
+		font-size: 14px;
 		font-weight: bold;
-		color: #f5222d;
+		padding: 0.5rem 1rem;
+		border-radius: 5px;
+
+		background-color: rgba(255, 255, 255, 0.2);
+		transition: background-color 100ms ease-in-out;
+		&:hover {
+			background-color: rgba(255, 255, 255, 0.3);
+		}
 
 		svg {
+			font-size: 16px;
 			margin-right: 0.1rem;
 		}
 	}
 `;
 
-export const HeaderLogoContainer = styled.div`
+export const LogoContainer = styled.div`
 	padding: 0.4rem 0;
-	height: 100%;
+	height: 90%;
 
 	& > img {
 		height: 100%;
@@ -48,7 +64,7 @@ export const HeaderLogoContainer = styled.div`
 `;
 
 export const MainContainer = styled.div`
-	height: calc(100vh - ${config.header.height});
+	height: calc(100vh - (${config.header.height} + 1.5rem));
 
 	display: grid;
 	grid-template-columns: 3fr 8fr;

@@ -1,10 +1,10 @@
 import { withIronSessionSsr } from 'iron-session/next';
 import { GetServerSidePropsContext } from 'next';
 import Image from 'next/image';
-import { resolve, extname } from 'path';
+import { resolve } from 'path';
 import { useRouter } from 'next/router';
 import getConfig from 'next/config';
-import { Dirent, readdirSync } from 'fs';
+import { readdirSync } from 'fs';
 
 import { BiChevronDown } from 'react-icons/bi';
 import { IoMdExit } from 'react-icons/io';
@@ -14,7 +14,8 @@ import { useState } from 'react';
 import Logo from '@/assets/logo-without-text.png';
 import {
 	Header,
-	HeaderLogoContainer,
+	HeaderContainer,
+	LogoContainer,
 	MainContainer,
 	SideBar,
 	Content,
@@ -193,20 +194,22 @@ export default function Dashboard(props: TProps) {
 
 	return (
 		<>
-			<Header data-container>
-				<HeaderLogoContainer>
-					<Image src={Logo} alt="The website logo" />
-				</HeaderLogoContainer>
+			<Header>
+				<HeaderContainer data-container>
+					<LogoContainer>
+						<Image src={Logo} alt="The website logo" />
+					</LogoContainer>
 
-				<div data-user>
-					<div>{user.name}</div>
-					<div>|</div>
-					<div>
-						<a onClick={handleLogout} data-logout>
-							<IoMdExit /> <span>Sair</span>
-						</a>
+					<div data-user>
+						<div>{user.name}</div>
+						<div>|</div>
+						<div>
+							<a onClick={handleLogout} data-logout>
+								<IoMdExit /> <span>Sair</span>
+							</a>
+						</div>
 					</div>
-				</div>
+				</HeaderContainer>
 			</Header>
 
 			<MainContainer data-container>
