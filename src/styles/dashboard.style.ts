@@ -60,6 +60,7 @@ export const SideBar = styled.aside`
 	padding: 0.5rem;
 	height: 100%;
 	border-radius: 5px;
+	width: 350px;
 
 	& > [data-folder]:first-child > button {
 		margin-top: 0 !important;
@@ -100,6 +101,14 @@ export const Folder = styled.div<FolderProps>`
 
 		display: flex;
 		justify-content: space-between;
+
+		& > span[data-title] {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			width: fit-content;
+			margin-right: 1.5rem;
+		}
 
 		transition: background-color 100ms ease-in-out;
 		&:hover {
@@ -152,6 +161,14 @@ export const File = styled.button<FileProps>`
 	border: none;
 	cursor: pointer;
 	margin-top: 0.5rem;
+	justify-content: flex-start;
+
+	& > span[data-title] {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		width: fit-content;
+	}
 
 	display: flex;
 	justify-content: space-between;

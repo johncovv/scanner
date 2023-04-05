@@ -143,7 +143,7 @@ export default function Dashboard(props: TProps) {
 							<BsFolder size={20} />
 						</IconContainer>
 
-						{leaf.title}
+						<span data-title>{leaf.title}</span>
 
 						<span className="arrow">
 							<BiChevronDown size={20} />
@@ -172,7 +172,9 @@ export default function Dashboard(props: TProps) {
 							return <Icon size={20} />;
 						})()}
 					</IconContainer>
-					{leaf.title}.{leaf.ext}
+
+					<span data-title>{leaf.title}</span>
+					<span>.{leaf.ext}</span>
 				</File>
 			);
 		}
