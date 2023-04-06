@@ -5,6 +5,6 @@ const environment = {
 	},
 };
 
-if (!environment.passport.password) throw new Error("PASSPORT_PASSWORD is not set in .env file");
+if (!environment.passport.password) throw new Error("PASSPORT_PASSWORD is not set on the environment");
 
 export { environment };
