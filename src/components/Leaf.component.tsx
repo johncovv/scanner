@@ -1,7 +1,7 @@
 import { BiChevronDown } from "react-icons/bi";
 import { BsFolder } from "react-icons/bs";
 
-import { Folder, File, IconContainer } from "@/styles/dashboard.style";
+import { Folder, File, IconContainer } from "@/styles/components/Leaf.style";
 import { TDataTree, TDataTreeFile } from "@/@types/tree";
 import { FILE_TYPES } from "@/shared/file-tipes";
 
