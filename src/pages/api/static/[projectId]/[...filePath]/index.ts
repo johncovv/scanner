@@ -4,7 +4,7 @@ import getConfig from 'next/config';
 import { resolve } from 'path';
 import * as mime from 'mime';
 
-import { TProjectSettingComplete } from '@/modules/project';
+import { TProjectSettingComplete } from '@/@types/project';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	const { projectId, filePath } = req.query as { projectId: string; filePath: string[] };

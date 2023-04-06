@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const { startup } = require('./startup');
+const { startup } = require("./startup");
 
 const nextConfig = {
 	reactStrictMode: true,
@@ -13,4 +13,3 @@ module.exports = async () => {
 
 	return nextConfig;
 };
-

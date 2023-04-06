@@ -64,19 +64,25 @@ export const LogoContainer = styled.div`
 `;
 
 export const MainContainer = styled.div`
-	height: calc(100vh - (${config.header.height} + 1.5rem));
+	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	min-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
 
-	display: grid;
-	grid-template-columns: 3fr 8fr;
 	padding: 1.5rem 0;
+	display: flex;
+	flex-direction: row;
 `;
 
 export const SideBar = styled.aside`
 	box-shadow: inset 0 0.5rem 1.5rem rgba(67, 67, 67, 0.1);
 	padding: 0.5rem;
-	height: 100%;
 	border-radius: 5px;
 	width: 350px;
+	min-width: 350px;
+	max-width: 350px;
+
+	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	margin-left: 1.5rem;
+	overflow-y: auto;
 
 	& > [data-folder]:first-child > button {
 		margin-top: 0 !important;
@@ -84,10 +90,13 @@ export const SideBar = styled.aside`
 `;
 
 export const Content = styled.main`
+	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	min-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
 	margin-left: 1.5rem;
-	height: 100%;
+	flex-grow: 1;
+	overflow: auto;
 
-	background-color: #434343;
+	background-color: var(--doc-preview-bg);
 	border-radius: 5px;
 
 	iframe {
@@ -95,6 +104,23 @@ export const Content = styled.main`
 		width: 100%;
 		height: 100%;
 		border: none;
+	}
+
+	[data-empty] {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		height: 100%;
+		color: #ffffff;
+
+		h2 {
+			margin-top: 1.5rem;
+		}
+
+		p {
+			margin-top: 0.5rem;
+		}
 	}
 `;
 
@@ -189,7 +215,6 @@ export const File = styled.button<FileProps>`
 	border: none;
 	cursor: pointer;
 	margin-top: 0.5rem;
-	justify-content: flex-start;
 
 	& > span[data-title] {
 		overflow: hidden;
@@ -199,7 +224,7 @@ export const File = styled.button<FileProps>`
 	}
 
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-start;
 
 	transition: filter 100ms ease-in;
 	&:hover {

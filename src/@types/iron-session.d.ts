@@ -1,16 +1,16 @@
-import { IronSession } from 'iron-session';
+import { IronSession } from "iron-session";
 
 export type TUser = {
 	name: string;
-	email: string;
+	username: string;
 	password: string;
 
 	projectId: string;
 };
 
-export type TPublicUser = Omit<TUser, 'password'>;
+export type TPublicUser = Omit<TUser, "password">;
 
-declare module 'iron-session' {
+declare module "iron-session" {
 	interface IronSession {
 		user?: TPublicUser;
 

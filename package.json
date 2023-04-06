@@ -1,31 +1,36 @@
 {
-  "name": "scanner",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "iron-session": "^6.3.1",
-    "mime": "^3.0.0",
-    "next": "13.2.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-icons": "^4.8.0",
-    "styled-components": "^5.3.9",
-    "typescript": "5.0.2",
-    "uuid": "^9.0.0"
-  },
-  "devDependencies": {
-    "@types/mime": "^3.0.1",
-    "@types/node": "18.15.3",
-    "@types/react": "18.0.28",
-    "@types/react-dom": "18.0.11",
-    "@types/react-icons": "^3.0.0",
-    "@types/styled-components": "^5.1.26",
-    "@types/uuid": "^9.0.1"
-  }
+	"name": "scanner",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint",
+		"register": "node -e \"require('./startup.js').startup()\""
+	},
+	"dependencies": {
+		"@faker-js/faker": "^7.6.0",
+		"docx-preview": "VolodymyrBaydalka/docxjs",
+		"iron-session": "^6.3.1",
+		"mime": "^3.0.0",
+		"next": "13.2.4",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"react-icons": "^4.8.0",
+		"react-spreadsheet": "^0.7.8",
+		"read-excel-file": "^5.6.1",
+		"styled-components": "^5.3.9",
+		"typescript": "5.0.2",
+		"uuid": "^9.0.0"
+	},
+	"devDependencies": {
+		"@types/mime": "^3.0.1",
+		"@types/node": "18.15.3",
+		"@types/react": "18.0.28",
+		"@types/react-dom": "18.0.11",
+		"@types/react-icons": "^3.0.0",
+		"@types/styled-components": "^5.1.26",
+		"@types/uuid": "^9.0.1"
+	}
 }

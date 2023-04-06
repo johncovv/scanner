@@ -1,42 +1,42 @@
-import { useRouter } from 'next/router';
-import { useState } from 'react';
-import Image from 'next/image';
+import { useRouter } from "next/router";
+import { useState } from "react";
+import Image from "next/image";
 
-import Logo from '@/assets/completed-logo.png';
-import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from '@/styles/login.style';
+import Logo from "@/assets/completed-logo.png";
+import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from "@/styles/login.style";
 
 export default function LoginPage() {
 	const router = useRouter();
 
-	const [password, setPassword] = useState('password');
-	const [email, setEmail] = useState('user@mail.com');
+	const [password, setPassword] = useState("");
+	const [username, setUsername] = useState("");
 
 	const onSubmit = async function (event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault();
 
-		if (!email || !password) {
-			alert('Port favor, preencha todos os campos!');
+		if (!username || !password) {
+			alert("Port favor, preencha todos os campos!");
 			return;
 		}
 
 		// send the post request to the server
 
-		const response = await fetch('/api/login', {
-			method: 'POST',
+		const response = await fetch("/api/login", {
+			method: "POST",
 			headers: {
-				'Content-Type': 'application/json',
+				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({ email, password }),
+			body: JSON.stringify({ username, password }),
 		});
 
 		const data = await response.json();
 
 		if (data.error) {
-			alert(data.message);
+			alert(data.error);
 			return;
 		}
 
-		router.push('/dashboard');
+		router.push("/dashboard");
 	};
 
 	return (
@@ -51,15 +51,15 @@ export default function LoginPage() {
 
 			<Form onSubmit={onSubmit}>
 				<InputControl>
-					<label htmlFor="email">Email</label>
+					<label htmlFor="username">Usuário</label>
 
 					<input
-						type="email"
-						id="email"
-						value={email}
+						type="text"
+						id="username"
+						value={username}
 						required
-						placeholder="Ex: jose.luiz@mail.com"
-						onChange={(e) => setEmail(e.target.value)}
+						placeholder="Ex: jose123"
+						onChange={(e) => setUsername(e.target.value)}
 					/>
 				</InputControl>
 

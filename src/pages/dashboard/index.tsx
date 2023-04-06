@@ -1,57 +1,123 @@
-import { withIronSessionSsr } from 'iron-session/next';
-import { GetServerSidePropsContext } from 'next';
-import Image from 'next/image';
-import { resolve } from 'path';
-import { useRouter } from 'next/router';
-import getConfig from 'next/config';
-import { readdirSync } from 'fs';
+import { withIronSessionSsr } from "iron-session/next";
+import { GetServerSidePropsContext } from "next";
+import getConfig from "next/config";
+import { readdirSync } from "fs";
+import { resolve } from "path";
 
-import { BiChevronDown } from 'react-icons/bi';
-import { IoMdExit } from 'react-icons/io';
-import { BsFolder } from 'react-icons/bs';
-import { useState } from 'react';
+import { IoFileTrayOutline } from "react-icons/io5";
+import Spreadsheet from "react-spreadsheet";
+import { useState } from "react";
 
-import Logo from '@/assets/logo-without-text.png';
-import {
-	Header,
-	HeaderContainer,
-	LogoContainer,
-	MainContainer,
-	SideBar,
-	Content,
-	Folder,
-	File,
-	IconContainer,
-} from '@/styles/dashboard.style';
-import type { TDataTree, TDataTreeFolder, TDataTreeFile } from '@/modules/tree';
-import { handleFile, handleFolder } from '@/shared/handles';
-import type { TProjectSetting } from '@/modules/project';
-import { TPublicUser } from '@/@types/iron-session';
-import { FILE_TYPES } from '@/shared/file-tipes';
-import { environment } from '@/config/env';
+import { TDashboardProps, handleFile, handleFolder } from "@/shared/dashboard.functions";
+import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
+import { MainContainer, SideBar, Content } from "@/styles/dashboard.style";
+import { readExcelFile } from "@/shared/functions/read-excel-file";
+import { renderDocxFile } from "@/shared/functions/read-word-file";
+import { toggleFolder } from "@/shared/functions/toggleFolder";
+import { Header } from "@/components/Header.component";
+import { TProjectSetting } from "@/@types/project";
+import { TPublicUser } from "@/@types/iron-session";
+import { Leaf } from "@/components/Leaf.component";
+import { environment } from "@/config/env";
+import { EAllowedFileTypes } from "@/@types/file-types";
 
-type TProps = {
-	user: Pick<TPublicUser, 'email' | 'name'>;
-	project: {
-		id: string;
-		name: string;
+export default function Dashboard(props: TDashboardProps) {
+	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
+	const [selectedFile, setSelectedFile] = useState<TDataTreeFile | null>(null);
+
+	const [specialFileData, setSpecialFileData] = useState<any>(null);
+
+	const handleFolderClick = (id: string) => {
+		const newTree = toggleFolder(id, projectTree);
+		setProjectTree(newTree);
 	};
-	projectTree: TDataTree;
-};
+
+	const handleFileClick = async (file: TDataTreeFile) => {
+		switch (file.ext) {
+			case EAllowedFileTypes.xlsx:
+			case EAllowedFileTypes.xls:
+				const excelFile = await readExcelFile(props.project.id, file);
+				setSpecialFileData(excelFile);
+				break;
+			case EAllowedFileTypes.doc:
+			case EAllowedFileTypes.docx:
+				void renderDocxFile(props.project.id, file);
+				break;
+			default:
+				setSpecialFileData(null);
+				break;
+		}
+
+		// after handling the special data, set the selected file
+		setSelectedFile(file);
+	};
+
+	return (
+		<>
+			<Header user={props.user} />
+
+			<MainContainer data-container>
+				<SideBar>
+					{projectTree.map((leaf) => (
+						<Leaf
+							key={leaf.id}
+							leaf={leaf}
+							fileIsSelected={leaf.type === "file" && selectedFile?.id === leaf.id}
+							handles={{
+								handleFileClick,
+								handleFolderClick,
+							}}
+						/>
+					))}
+				</SideBar>
+
+				<Content>
+					{selectedFile ? (
+						(() => {
+							switch (selectedFile.ext) {
+								case EAllowedFileTypes.xlsx:
+								case EAllowedFileTypes.xls:
+									return <Spreadsheet data={specialFileData} />;
+								case EAllowedFileTypes.doc:
+								case EAllowedFileTypes.docx:
+									return <div data-docx-preview></div>;
+								default:
+									return <iframe src={`/api/static/${props.project.id}/${selectedFile.path}`} />;
+							}
+						})()
+					) : (
+						<div data-empty>
+							<IoFileTrayOutline size={64} />
+
+							<h2>Nenhum documento selecionado</h2>
+							<p>selecione um documento para visualizar</p>
+						</div>
+					)}
+				</Content>
+			</MainContainer>
+		</>
+	);
+}
 
 export const getServerSideProps = withIronSessionSsr(
-	async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: TProps }> {
+	async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: TDashboardProps }> {
 		const user: TPublicUser = context.req.session.user!;
+
+		// Get project settings
 
 		const { serverRuntimeConfig } = getConfig();
 		const { projectsList } = serverRuntimeConfig;
 
 		const targetProject = projectsList.find((project: TProjectSetting) => project.id === user.projectId);
 
-		if (!targetProject) throw new Error('Project not found');
+		if (!targetProject) throw new Error("Project not found");
 
-		const staticFolderPath = resolve(process.cwd(), 'static', targetProject.folder_name);
+		// Get project tree
+
+		const staticFolderPath = resolve(process.cwd(), "static", targetProject.folder_name);
 		const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
+
+		// Handle folders and files
 
 		let rootFolders: Array<TDataTreeFolder> = [];
 		let rootFiles: Array<TDataTreeFile> = [];
@@ -71,9 +137,11 @@ export const getServerSideProps = withIronSessionSsr(
 		rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
 		rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
 
+		// Return props
+
 		return {
 			props: {
-				user: { name: user.name, email: user.email },
+				user: { name: user.name, username: user.username },
 				project: {
 					id: targetProject.id,
 					name: targetProject.name,
@@ -86,137 +154,7 @@ export const getServerSideProps = withIronSessionSsr(
 		cookieName: environment.passport.cookie_name,
 		password: environment.passport.password,
 		cookieOptions: {
-			secure: process.env.NODE_ENV === 'production',
+			secure: process.env.NODE_ENV === "production",
 		},
 	}
 );
-
-export default function Dashboard(props: TProps) {
-	const router = useRouter();
-
-	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
-	const [user] = useState(props.user);
-
-	const [iframeFile, setIframeFile] = useState<TDataTreeFile | null>(null);
-
-	const toggleFolder = (id: string, tree: TDataTree): TDataTree => {
-		return tree.map((item) => {
-			if (item.type === 'folder') {
-				if (item.id === id) {
-					return {
-						...item,
-						isOpen: !item.isOpen,
-					};
-				} else {
-					return {
-						...item,
-						leaf: toggleFolder(id, item.leaf),
-					};
-				}
-			} else {
-				return item;
-			}
-		});
-	};
-
-	const handleFolderClick = (id: string) => {
-		const newTree = toggleFolder(id, projectTree);
-		setProjectTree(newTree);
-	};
-
-	const handleFileClick = (file: TDataTreeFile) => {
-		setIframeFile(file);
-	};
-
-	const renderTree = (leaf: TDataTree[number]) => {
-		if (leaf.type === 'folder') {
-			return (
-				<Folder key={leaf.id} isOpen={leaf.isOpen} data-folder data-open={leaf.isOpen}>
-					<button
-						className="folder__title"
-						disabled={leaf.leaf.length === 0}
-						onClick={(e) => {
-							e.stopPropagation();
-							handleFolderClick(leaf.id);
-						}}
-					>
-						<IconContainer>
-							<BsFolder size={20} />
-						</IconContainer>
-
-						<span data-title>{leaf.title}</span>
-
-						<span className="arrow">
-							<BiChevronDown size={20} />
-						</span>
-					</button>
-
-					<div className="folder__container">
-						<div className="folder__content">{leaf.leaf.map((item: any) => renderTree(item))}</div>
-					</div>
-				</Folder>
-			);
-		} else {
-			return (
-				<File
-					key={leaf.id}
-					isSelected={iframeFile?.id === leaf.id}
-					onClick={(e) => {
-						e.stopPropagation();
-						handleFileClick(leaf);
-					}}
-				>
-					<IconContainer>
-						{(() => {
-							const Icon = FILE_TYPES[leaf.ext];
-
-							return <Icon size={20} />;
-						})()}
-					</IconContainer>
-
-					<span data-title>{leaf.title}</span>
-					<span>.{leaf.ext}</span>
-				</File>
-			);
-		}
-	};
-
-	const handleLogout = async () => {
-		const res = await fetch('/api/logout', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
-
-		if (res.ok) router.push('/login');
-	};
-
-	return (
-		<>
-			<Header>
-				<HeaderContainer data-container>
-					<LogoContainer>
-						<Image src={Logo} alt="The website logo" />
-					</LogoContainer>
-
-					<div data-user>
-						<div>{user.name}</div>
-						<div>|</div>
-						<div>
-							<a onClick={handleLogout} data-logout>
-								<IoMdExit /> <span>Sair</span>
-							</a>
-						</div>
-					</div>
-				</HeaderContainer>
-			</Header>
-
-			<MainContainer data-container>
-				<SideBar>{projectTree.map((item) => renderTree(item))}</SideBar>
-
-				<Content>{iframeFile && <iframe src={`/api/static/${props.project.id}/${iframeFile.path}`} />}</Content>
-			</MainContainer>
-		</>
-	);
-}

@@ -1,4 +1,4 @@
-import { IconType } from 'react-icons';
+import { IconType } from "react-icons";
 import {
 	BsFiletypePdf,
 	BsFiletypeTxt,
@@ -11,7 +11,7 @@ import {
 	BsFiletypePng,
 	BsFiletypeJpg,
 	BsFiletypeGif,
-} from 'react-icons/bs';
+} from "react-icons/bs";
 
 export const FILE_TYPES: {
 	[key: string]: IconType;

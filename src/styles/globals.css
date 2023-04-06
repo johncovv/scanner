@@ -4,9 +4,14 @@
 	margin: 0;
 }
 
+:root {
+	--doc-preview-bg: #7f7f7f;
+}
+
 html,
 body {
 	max-width: 100vw;
+	min-height: 100vh;
 	overflow-x: hidden;
 
 	font-family: sans-serif;
@@ -30,4 +35,39 @@ a {
 button,
 a {
 	cursor: pointer;
+}
+
+.Spreadsheet {
+	display: block !important;
+	height: fit-content !important;
+	width: fit-content !important;
+}
+
+.docx-wrapper {
+	height: 100%;
+	background: var(--doc-preview-bg) !important;
+}
+.docx-wrapper .docx {
+	width: 100% !important;
+}
+
+main iframe body {
+	background: var(--doc-preview-bg) !important;
+}
+
+*::-webkit-scrollbar {
+	width: 0.5rem;
+	height: 0.5rem;
+}
+
+*::-webkit-scrollbar-track {
+	background: #ccc;
+}
+
+*::-webkit-scrollbar-thumb {
+	background: linear-gradient(to top, #60bcd5, #92c6d4, #24a3da);
+}
+
+*::-webkit-scrollbar-thumb:horizontal {
+	background: linear-gradient(to left, #60bcd5, #92c6d4, #24a3da);
 }
