@@ -15,8 +15,8 @@ import { readExcelFile } from "@/shared/functions/read-excel-file";
 import { renderDocxFile } from "@/shared/functions/read-word-file";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
 import { Header } from "@/components/Header.component";
-import { TProjectSetting } from "@/@types/project";
-import { TPublicUser } from "@/@types/iron-session";
+import type { TProjectSetting } from "@/@types/project";
+import type { TPublicUser } from "@/@types/iron-session";
 import { Leaf } from "@/components/Leaf.component";
 import { environment } from "@/config/env";
 import { EAllowedFileTypes } from "@/@types/file-types";
@@ -24,15 +24,14 @@ import { EAllowedFileTypes } from "@/@types/file-types";
 export default function Dashboard(props: TDashboardProps) {
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
 	const [selectedFile, setSelectedFile] = useState<TDataTreeFile | null>(null);
-
 	const [specialFileData, setSpecialFileData] = useState<any>(null);
 
-	const handleFolderClick = (id: string) => {
+	function handleFolderClick(id: string) {
 		const newTree = toggleFolder(id, projectTree);
 		setProjectTree(newTree);
-	};
+	}
 
-	const handleFileClick = async (file: TDataTreeFile) => {
+	async function handleFileClick(file: TDataTreeFile) {
 		switch (file.ext) {
 			case EAllowedFileTypes.xlsx:
 			case EAllowedFileTypes.xls:
@@ -50,7 +49,33 @@ export default function Dashboard(props: TDashboardProps) {
 
 		// after handling the special data, set the selected file
 		setSelectedFile(file);
-	};
+	}
+
+	function renderSelectedFile() {
+		if (!selectedFile) return;
+
+		switch (selectedFile.ext) {
+			case EAllowedFileTypes.xlsx:
+			case EAllowedFileTypes.xls:
+				return <Spreadsheet data={specialFileData} />;
+			case EAllowedFileTypes.doc:
+			case EAllowedFileTypes.docx:
+				return <div data-docx-preview></div>;
+			default:
+				return <iframe src={`/api/static/${props.project.id}/${selectedFile.path}`} />;
+		}
+	}
+
+	function renderEmptyContent() {
+		return (
+			<div data-empty>
+				<IoFileTrayOutline size={64} />
+
+				<h2>Nenhum documento selecionado</h2>
+				<p>selecione um documento para visualizar</p>
+			</div>
+		);
+	}
 
 	return (
 		<>
@@ -62,7 +87,7 @@ export default function Dashboard(props: TDashboardProps) {
 						<Leaf
 							key={leaf.id}
 							leaf={leaf}
-							fileIsSelected={leaf.type === "file" && selectedFile?.id === leaf.id}
+							selectedFileId={selectedFile?.id}
 							handles={{
 								handleFileClick,
 								handleFolderClick,
@@ -71,29 +96,7 @@ export default function Dashboard(props: TDashboardProps) {
 					))}
 				</SideBar>
 
-				<Content>
-					{selectedFile ? (
-						(() => {
-							switch (selectedFile.ext) {
-								case EAllowedFileTypes.xlsx:
-								case EAllowedFileTypes.xls:
-									return <Spreadsheet data={specialFileData} />;
-								case EAllowedFileTypes.doc:
-								case EAllowedFileTypes.docx:
-									return <div data-docx-preview></div>;
-								default:
-									return <iframe src={`/api/static/${props.project.id}/${selectedFile.path}`} />;
-							}
-						})()
-					) : (
-						<div data-empty>
-							<IoFileTrayOutline size={64} />
-
-							<h2>Nenhum documento selecionado</h2>
-							<p>selecione um documento para visualizar</p>
-						</div>
-					)}
-				</Content>
+				<Content>{selectedFile ? renderSelectedFile() : renderEmptyContent()}</Content>
 			</MainContainer>
 		</>
 	);

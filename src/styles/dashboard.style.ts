@@ -84,7 +84,8 @@ export const SideBar = styled.aside`
 	margin-left: 1.5rem;
 	overflow-y: auto;
 
-	& > [data-folder]:first-child > button {
+	& > [data-folder]:first-child > button,
+	& > button[data-file]:first-child {
 		margin-top: 0 !important;
 	}
 `;
