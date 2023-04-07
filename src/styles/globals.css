@@ -65,9 +65,9 @@ main iframe body {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: linear-gradient(to top, #60bcd5, #92c6d4, #24a3da);
+	background: linear-gradient(to top, #60bcd5, #24a3da);
 }
 
 *::-webkit-scrollbar-thumb:horizontal {
-	background: linear-gradient(to left, #60bcd5, #92c6d4, #24a3da);
+	background: linear-gradient(to left, #60bcd5, #24a3da);
 }
