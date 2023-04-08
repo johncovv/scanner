@@ -55,4 +55,6 @@ export const CheckBox = styled.span`
 	}
 `;
 
-export const Content = styled.div``;
+export const Content = styled.div`
+	flex: 1;
+`;

@@ -51,7 +51,7 @@ export const Container = styled.div`
 	position: relative;
 	min-width: 200px;
 
-	&[aria-expanded="true"] {
+	&[aria-expanded="false"] {
 		[data-trigger-arrow] {
 			transform: translateY(-50%) rotate(180deg);
 		}
