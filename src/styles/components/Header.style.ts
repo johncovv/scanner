@@ -5,7 +5,6 @@ import { config } from "@/styles/config";
 export const Container = styled.header`
 	background: linear-gradient(to left, #60bcd5, #24a3da 25%);
 	height: ${config.header.height};
-	margin-bottom: 1.5rem;
 `;
 
 export const Content = styled.div`

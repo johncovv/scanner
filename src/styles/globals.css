@@ -1,11 +1,13 @@
+:root {
+	--doc-preview-bg: #7f7f7f;
+	--primary-blue: #166eae;
+	--secondary-blue: #24a8e0;
+}
+
 * {
 	box-sizing: border-box;
 	padding: 0;
 	margin: 0;
-}
-
-:root {
-	--doc-preview-bg: #7f7f7f;
 }
 
 html,

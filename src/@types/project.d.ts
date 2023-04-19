@@ -1,4 +1,4 @@
-import type { TUser } from '@/@types/iron-session.d';
+import type { TUser, TPublicUser } from "@/@types/iron-session.d";
 
 export type TProjectSetting = {
 	id: string;
@@ -8,4 +8,8 @@ export type TProjectSetting = {
 
 export type TProjectSettingComplete = {
 	owner: TUser;
+} & TProjectSetting;
+
+export type TPublicProjectSettingComplete = {
+	owner: TPublicUser;
 } & TProjectSetting;

@@ -1,72 +1,11 @@
 import styled from "styled-components";
-
-const config = {
-	header: {
-		height: "58px",
-	},
-};
-
-export const Header = styled.header`
-	background: linear-gradient(to left, #60bcd5, #24a3da 25%);
-	height: ${config.header.height};
-	margin-bottom: 1.5rem;
-`;
-
-export const HeaderContainer = styled.div`
-	width: 100%;
-	height: 100%;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-
-	div[data-user] {
-		display: flex;
-		align-items: center;
-		color: #ffffff;
-
-		& > div {
-			display: inline-flex;
-			align-items: center;
-			margin-left: 1rem;
-		}
-	}
-
-	a[data-logout] {
-		display: inline-flex;
-		align-items: center;
-
-		font-size: 14px;
-		font-weight: bold;
-		padding: 0.5rem 1rem;
-		border-radius: 5px;
-
-		background-color: rgba(255, 255, 255, 0.2);
-		transition: background-color 100ms ease-in-out;
-		&:hover {
-			background-color: rgba(255, 255, 255, 0.3);
-		}
-
-		svg {
-			font-size: 16px;
-			margin-right: 0.1rem;
-		}
-	}
-`;
-
-export const LogoContainer = styled.div`
-	padding: 0.4rem 0;
-	height: 90%;
-
-	& > img {
-		height: 100%;
-		width: auto;
-	}
-`;
+import { config } from "./config";
 
 export const MainContainer = styled.div`
-	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
-	min-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	max-height: calc(100vh - (${config.header.height} + 1.5rem));
+	min-height: calc(100vh - (${config.header.height} + 1.5rem));
 
+	margin-top: 1.5rem;
 	padding: 1.5rem 0;
 	display: flex;
 	flex-direction: row;
@@ -80,7 +19,7 @@ export const SideBar = styled.aside`
 	min-width: 350px;
 	max-width: 350px;
 
-	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	max-height: calc(100vh - (${config.header.height} + 1.5rem));
 	margin-left: 1.5rem;
 	overflow-y: auto;
 
@@ -91,8 +30,8 @@ export const SideBar = styled.aside`
 `;
 
 export const Content = styled.main`
-	max-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
-	min-height: calc(100vh - (${config.header.height} + (1.5rem * 2)));
+	max-height: calc(100vh - (${config.header.height} + 1.5rem));
+	min-height: calc(100vh - (${config.header.height} + 1.5rem));
 	margin-left: 1.5rem;
 	flex-grow: 1;
 	overflow: auto;

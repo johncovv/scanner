@@ -15,6 +15,17 @@ export default withIronSessionApiRoute(
 		const { serverRuntimeConfig } = getConfig();
 		const { projectsList } = serverRuntimeConfig as { projectsList: Array<TProjectSettingComplete> };
 
+		if (username === "admin" && password === environment.adminPassword) {
+			req.session.user = {
+				name: "Administrador",
+				username: "admin",
+				isAdmin: true,
+			};
+
+			await req.session.save();
+			return res.status(200).send({ ok: true, isAdmin: true });
+		}
+
 		const targetProject = projectsList.find((project) => project.owner.username === username);
 
 		if (!targetProject) {

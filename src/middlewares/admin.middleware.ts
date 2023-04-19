@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { environment } from "@/config/env";
 
 export default {
-	match: "/dashboard",
+	match: "/admin",
 	exec: async function (req: NextRequest): Promise<NextResponse> {
 		const response = NextResponse.next();
 
@@ -13,7 +13,6 @@ export default {
 			cookieName: environment.passport.cookie_name,
 			password: environment.passport.password,
 			cookieOptions: {
-				// secure: true should be used in production (HTTPS) but can't be used in development (HTTP)
 				secure: process.env.NODE_ENV === "production",
 			},
 		});
@@ -24,8 +23,8 @@ export default {
 			return NextResponse.redirect(new URL("/login", req.url));
 		}
 
-		if (user.isAdmin) {
-			return NextResponse.redirect(new URL("/admin", req.url));
+		if (!user.isAdmin) {
+			return NextResponse.redirect(new URL("/dashboard", req.url));
 		}
 
 		return response;

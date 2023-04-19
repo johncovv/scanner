@@ -2,7 +2,7 @@ const { faker } = require("@faker-js/faker");
 const { v4: uuid } = require("uuid");
 const fs = require("fs");
 
-async function startup() {
+async function startup(params = { log: true }) {
 	const projectsList = await fs.promises.readdir("./static", { withFileTypes: true });
 
 	const validFolders = [];
@@ -50,7 +50,9 @@ async function startup() {
 
 			validFolders.push({ ...setting, folder_name: project.name });
 
-			console.info(`✅ "${setting.name}" was successfully registered!`);
+			if (params.log) {
+				console.info(`✅ "${setting.name}" was successfully registered!`);
+			}
 		} catch (error) {
 			continue;
 		}
