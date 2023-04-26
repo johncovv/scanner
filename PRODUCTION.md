@@ -82,13 +82,14 @@
     ```.env
     PASSPORT_PASSWORD=<RANDOM_PASSWORD_WITH_AT_LEAST_64_CHARACTERS>
     ADMIN_PASSWORD=<ADMIN_PASSWORD>
+    STATIC_DIR=<STATIC_FOLDER_PATH>
     ```
 
 12. Install the NGINX for reverse proxy server
 
     ```bash
     sudo apt update
-    sudo apt-get install nginx -y´
+    sudo apt-get install nginx -y
 
     # check the nginx status
     sudo systemctl status nginx
@@ -192,46 +193,59 @@
      ```bash
      sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.orig
      ```
+
 2. Configuring FTP access
-	- Open the vsftpd config file
-		```bash
-		sudo nano /etc/vsftpd.conf
-		```
-	- Set the following configurations
-		```bash
-		# Allow anonymous FTP? (Disabled by default).
-		anonymous_enable=NO
+   - Open the vsftpd config file
+     ```bash
+     sudo nano /etc/vsftpd.conf
+     ```
+   - Set the following configurations
 
-		# Uncomment this to allow local users to log in.
-		local_enable=YES
+     ```bash
+     # Allow anonymous FTP? (Disabled by default).
+     anonymous_enable=NO
 
-		# Allow users to add, change, or remove files and directories on the filesystem
-		write_enable=YES
+     # Uncomment this to allow local users to log in.
+     local_enable=YES
 
-		# Prevent the FTP-connected user from accessing any files outside the directory tree
-		chroot_local_user=YES
+     # Allow users to add, change, or remove files and directories on the filesystem
+     write_enable=YES
 
-		# Redirect the user to the correct directory
-		user_sub_token=$USER
-		local_root=/home/$USER/scanner/static
+     # Prevent the FTP-connected user from accessing any files outside the directory tree
+     chroot_local_user=YES
 
-		# Limit the ports range
-		pasv_min_port=21000
-		pasv_max_port=21999
+     # Redirect the user to the correct directory
+     user_sub_token=$USER
+     local_root=<STATIC_PROJECTS_FOLDER>
 
-		# Limit the users acces to the written on the users list
-		userlist_enable=YES
-		userlist_file=/etc/vsftpd.userlist
-		userlist_deny=NO
-		```
-	- Add the current user on the allowed users list
-	```bash
-	echo "<YOUR_USER>" | sudo tee -a /etc/vsftpd.userlist
+     # Limit the users acces to the written on the users list
+     userlist_enable=YES
+     userlist_file=/etc/vsftpd.userlist
+     userlist_deny=NO
 
-	# Check the registered users
-	cat /etc/vsftpd.userlist
-	```
-	- Restart the vsftpd service
-	```bash
-	sudo systemctl restart vsftpd
-	```
+     # Define a safe directory to the vftpd chroot
+     allow_writeable_chroot=YES
+     secure_chroot_dir=/var/run/vsftpd/empty
+
+      # Configure the passive mode
+     pasv_enable=YES
+     pasv_min_port=1024
+     pasv_max_port=1048
+     pasv_address=<EC2_PUBLIC_IP>
+     pasv_addr_resolve=YES
+     ```
+
+   - Add the current user on the allowed users list
+
+   ```bash
+   echo "<YOUR_USER>" | sudo tee -a /etc/vsftpd.userlist
+
+   # Check the registered users
+   cat /etc/vsftpd.userlist
+   ```
+
+   - Restart the vsftpd service
+
+   ```bash
+   sudo systemctl restart vsftpd
+   ```
