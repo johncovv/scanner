@@ -117,7 +117,7 @@ export const getServerSideProps = withIronSessionSsr(
 
 		// Get project tree
 
-		const staticFolderPath = resolve(process.cwd(), "static", targetProject.folder_name);
+		const staticFolderPath = resolve(environment.staticDir, targetProject.folder_name);
 		const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
 
 		// Handle folders and files

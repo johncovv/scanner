@@ -16,8 +16,7 @@
 /build
 
 # static
-/static/*
-!/static/.gitkeep
+/static
 
 
 # misc
@@ -31,7 +30,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env*.local
+.env*
 
 # vercel
 .vercel
