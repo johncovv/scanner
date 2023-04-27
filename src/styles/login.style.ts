@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const MainContainer = styled.main`
 	background: linear-gradient(to bottom, #f1f4f9, #60bcd5, #24a3da);
@@ -12,6 +12,8 @@ export const MainContainer = styled.main`
 
 	width: 100%;
 	height: 100vh;
+	overflow: hidden;
+	position: relative;
 
 	& > [data-color] {
 		position: absolute;

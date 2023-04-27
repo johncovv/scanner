@@ -6,7 +6,7 @@ export const Container = styled.div`
 	max-height: calc(100vh - ${config.header.height});
 	min-height: calc(100vh - ${config.header.height});
 
-	padding: 1.5rem;
+	padding: 1.5rem !important;
 
 	display: grid;
 	grid-template-columns: 3fr 1fr;
