@@ -7,20 +7,32 @@ import type { TPublicUser } from "@/@types/iron-session";
 import { Header } from "@/components/Header.component";
 import { environment } from "@/config/env";
 import getConfig from "next/config";
+import { useState } from "react";
 
 type TAdminProps = {
 	user: TPublicUser;
-	projectsList: Array<Omit<TPublicProjectSettingComplete, "owner.password">>;
+	projectsList: Array<TPublicProjectSettingComplete>;
 };
 
 export default function Dashboard(props: TAdminProps) {
+	const [projectsList, setProjectsList] = useState<TAdminProps["projectsList"]>(props.projectsList);
+
 	async function handleProjectsUpdate() {
 		const wasAccepted = window.confirm("Are you sure you want to re-scan all the projets?");
 
 		if (wasAccepted) {
-			await fetch("/api/projects/update", {
-				method: "PUT",
-			});
+			try {
+				const response = await fetch("/api/projects/update", {
+					method: "PUT",
+				});
+
+				if (!response.ok) throw new Error("Failed to dispatch projects update");
+
+				const data = await response.json();
+				setProjectsList(data);
+			} catch (error) {
+				console.error(error);
+			}
 		}
 	}
 
@@ -28,7 +40,7 @@ export default function Dashboard(props: TAdminProps) {
 		<>
 			<Header user={props.user} />
 
-			<Container>
+			<Container data-container>
 				<Table>
 					<thead>
 						<tr>
@@ -38,7 +50,7 @@ export default function Dashboard(props: TAdminProps) {
 					</thead>
 
 					<tbody>
-						{props.projectsList.map((project) => (
+						{projectsList.map((project) => (
 							<tr key={project.id}>
 								<td>{project.name}</td>
 								<td>{project.owner.username}</td>
@@ -52,7 +64,7 @@ export default function Dashboard(props: TAdminProps) {
 
 					<div data-content>
 						<Button type="button" onClick={handleProjectsUpdate}>
-							Dispatch projects update
+							Atualizar projetos
 						</Button>
 					</div>
 				</ActionsContainer>
