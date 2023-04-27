@@ -1,11 +1,12 @@
 import { resolve, join, extname } from "path";
 import { Dirent, readdirSync } from "fs";
+import iconv from "iconv-lite";
 
 import type { TDataTreeFolder, TDataTreeFile, TDataTree } from "@/@types/tree";
 import { uuid } from "@/shared/functions/generate-uuid";
+import { EAllowedFileTypes } from "@/@types/file-types";
 import { TPublicUser } from "@/@types/iron-session";
 import { FILE_TYPES } from "@/shared/file-tipes";
-import { EAllowedFileTypes } from "../@types/file-types";
 
 export type TDashboardProps = {
 	user: Pick<TPublicUser, "username" | "name">;
@@ -28,18 +29,23 @@ export async function handleFolder(item: Dirent, staticFolderPath: string, isSub
 		path: isSubFolder ? join(parentPath, encodeURIComponent(item.name)) : encodeURIComponent(item.name),
 	};
 
-	const folderPath = isSubFolder ? join(staticFolderPath, parentPath, item.name) : join(staticFolderPath, item.name);
+	const parentPathDecoded = iconv.decode(Buffer.from(parentPath), "utf-8");
+	const itemPathDecoded = iconv.decode(Buffer.from(item.name), "utf-8");
+
+	const folderPath = isSubFolder
+		? resolve(staticFolderPath, parentPathDecoded, itemPathDecoded)
+		: resolve(staticFolderPath, itemPathDecoded);
 
 	// Get all files and folders inside the current folder
 
-	const folderInfo = await readdirSync(resolve(folderPath), { withFileTypes: true });
+	const folderInfo = await readdirSync(folderPath, { withFileTypes: true });
 
 	for (const leaf of folderInfo) {
 		if (leaf.isFile()) {
 			const file = await handleFile(leaf, true, folder.path);
 			if (file) folder.leaf.push(file);
 		} else if (leaf.isDirectory()) {
-			const subFolder = await handleFolder(leaf, staticFolderPath, true, join(parentPath, item.name));
+			const subFolder = await handleFolder(leaf, staticFolderPath, true, join(parentPathDecoded, itemPathDecoded));
 			if (subFolder) folder.leaf.push(subFolder);
 		}
 	}
