@@ -233,6 +233,10 @@
      pasv_max_port=1048
      pasv_address=<EC2_PUBLIC_IP>
      pasv_addr_resolve=YES
+
+     # Enable the ASCII mode
+     ascii_upload_enable=YES
+     ascii_download_enable=YES
      ```
 
    - Add the current user on the allowed users list
