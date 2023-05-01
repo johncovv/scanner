@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { environment } from "@/config/env";
 
 export default {
-	match: "/dashboard",
+	match: "/login",
 	exec: async function (req: NextRequest): Promise<NextResponse> {
 		const response = NextResponse.next();
 
@@ -17,14 +17,8 @@ export default {
 			},
 		});
 
-		const { user } = session;
-
-		if (!user) {
-			return NextResponse.redirect(new URL("/login", req.url));
-		}
-
-		if (user.isAdmin) {
-			return NextResponse.redirect(new URL("/admin", req.url));
+		if (session.user != null) {
+			return NextResponse.redirect(new URL("/dashboard", req.url));
 		}
 
 		return response;
