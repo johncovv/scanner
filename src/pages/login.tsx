@@ -1,13 +1,18 @@
-import { useRouter } from "next/router";
 import { useState } from "react";
 import Image from "next/image";
 
 import Logo from "@/assets/completed-logo.png";
 import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from "@/styles/login.style";
 
-export default function LoginPage() {
-	const router = useRouter();
+export async function getStaticProps() {
+	return {
+		props: {
+			static: true,
+		},
+	};
+}
 
+export default function LoginPage() {
 	const [password, setPassword] = useState("");
 	const [username, setUsername] = useState("");
 
@@ -36,7 +41,11 @@ export default function LoginPage() {
 			return;
 		}
 
-		router.push("/dashboard");
+		if (data.user.isAdmin) {
+			window.location.assign("/admin");
+		} else {
+			window.location.assign("/dashboard");
+		}
 	};
 
 	return (

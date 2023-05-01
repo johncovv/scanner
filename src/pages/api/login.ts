@@ -47,12 +47,11 @@ export default withIronSessionApiRoute(
 		req.session.user = Object.assign(user, { projectId: targetProject.id });
 
 		await req.session.save();
-		return res.status(200).send({ ok: true });
+		return res.status(200).send({ ok: true, user });
 	},
 	{
 		cookieName: environment.passport.cookie_name,
 		password: environment.passport.password,
-		// secure: true should be used in production (HTTPS) but can't be used in development (HTTP)
 		cookieOptions: {
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 60 * 60 * 24,
