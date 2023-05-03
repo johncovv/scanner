@@ -7,7 +7,7 @@ import { environment } from "@/config/env";
 export default withIronSessionApiRoute(
 	async function loginRoute(req, res) {
 		if (req.method !== "POST") {
-			return res.status(405).send({ ok: false, error: "method not allowed" });
+			return res.status(405).send({ ok: false, error: "method not allowed", status: 405 });
 		}
 
 		const { username, password } = await req.body;
@@ -23,13 +23,13 @@ export default withIronSessionApiRoute(
 			};
 
 			await req.session.save();
-			return res.status(200).send({ ok: true, isAdmin: true });
+			return res.status(200).send({ ok: true, user: req.session.user, status: 200 });
 		}
 
 		const targetProject = projectsList.find((project) => project.owner.username === username);
 
 		if (!targetProject) {
-			return res.status(401).send({ ok: false, error: "username/password is incorrect" });
+			return res.status(401).send({ ok: false, error: "username/password is incorrect", status: 401 });
 		}
 
 		// check if the username and password are correct
@@ -38,7 +38,7 @@ export default withIronSessionApiRoute(
 		const passwordIsCorrect = password === targetProject.owner.password;
 
 		if (!passwordIsCorrect || !usernameIsCorrect) {
-			return res.status(401).send({ ok: false, error: "username/password is incorrect" });
+			return res.status(401).send({ ok: false, error: "username/password is incorrect", status: 401 });
 		}
 
 		const { password: _, ...user } = targetProject.owner;
@@ -47,7 +47,7 @@ export default withIronSessionApiRoute(
 		req.session.user = Object.assign(user, { projectId: targetProject.id });
 
 		await req.session.save();
-		return res.status(200).send({ ok: true, user });
+		return res.status(200).send({ ok: true, user, status: 200 });
 	},
 	{
 		cookieName: environment.passport.cookie_name,

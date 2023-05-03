@@ -26,25 +26,28 @@ export default function LoginPage() {
 
 		// send the post request to the server
 
-		const response = await fetch("/api/login", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ username, password }),
-		});
+		try {
+			const response = await fetch("/api/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ username, password }),
+			});
 
-		const data = await response.json();
+			const data = await response.json();
 
-		if (data.error) {
-			alert(data.error);
-			return;
-		}
+			if (data.error) {
+				throw new Error(data.error);
+			}
 
-		if (data.user.isAdmin) {
-			window.location.assign("/admin");
-		} else {
-			window.location.assign("/dashboard");
+			if (data.user.isAdmin) {
+				window.location.assign("/admin");
+			} else {
+				window.location.assign("/dashboard");
+			}
+		} catch (error) {
+			alert(error ?? "Ocorreu um erro ao fazer login, tente novamente mais tarde!");
 		}
 	};
 
