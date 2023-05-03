@@ -1,5 +1,4 @@
 import { TDataTreeFile } from "@/@types/tree";
-// import docx from "docx-preview";
 
 export async function renderDocxFile(projectId: string, file: TDataTreeFile): Promise<void> {
 	try {

@@ -25,6 +25,7 @@ export default function Dashboard(props: TDashboardProps) {
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
 	const [selectedFile, setSelectedFile] = useState<TDataTreeFile | null>(null);
 	const [specialFileData, setSpecialFileData] = useState<any>(null);
+	const [contentKey, setContentKey] = useState<number>(0);
 
 	function handleFolderClick(id: string) {
 		const newTree = toggleFolder(id, projectTree);
@@ -49,6 +50,7 @@ export default function Dashboard(props: TDashboardProps) {
 
 		// after handling the special data, set the selected file
 		setSelectedFile(file);
+		setContentKey((value) => value + 1);
 	}
 
 	function renderSelectedFile() {
@@ -96,7 +98,7 @@ export default function Dashboard(props: TDashboardProps) {
 					))}
 				</SideBar>
 
-				<Content>{selectedFile ? renderSelectedFile() : renderEmptyContent()}</Content>
+				<Content key={contentKey}>{selectedFile ? renderSelectedFile() : renderEmptyContent()}</Content>
 			</MainContainer>
 		</>
 	);
