@@ -1,13 +1,15 @@
 import { withIronSessionSsr } from "iron-session/next";
 import { GetServerSidePropsContext } from "next";
+import getConfig from "next/config";
+import Head from "next/head";
 
-import { Container, ActionsContainer, Button, Table } from "@/styles/admin.style";
+import { useState } from "react";
+
+import { Container, ActionsContainer, Button, Table } from "@/styles/pages/admin.style";
 import type { TPublicProjectSettingComplete } from "@/@types/project";
 import type { TPublicUser } from "@/@types/iron-session";
 import { Header } from "@/components/Header.component";
 import { environment } from "@/config/env";
-import getConfig from "next/config";
-import { useState } from "react";
 
 type TAdminProps = {
 	user: TPublicUser;
@@ -38,6 +40,10 @@ export default function Dashboard(props: TAdminProps) {
 
 	return (
 		<>
+			<Head>
+				<title>Administração - Risti Scanner</title>
+			</Head>
+
 			<Header user={props.user} />
 
 			<Container data-container>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import Image from "next/image";
+import Head from "next/head";
 
 import Logo from "@/assets/completed-logo.png";
-import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from "@/styles/login.style";
+import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from "@/styles/pages/login.style";
 
 export async function getStaticProps() {
 	return {
@@ -52,45 +53,51 @@ export default function LoginPage() {
 	};
 
 	return (
-		<MainContainer>
-			<div data-color></div>
-			<div data-color></div>
-			<div data-color></div>
+		<>
+			<Head>
+				<title>Login - Risti Scanner</title>
+			</Head>
 
-			<LogoContainer>
-				<Image src={Logo} alt="the website logo" />
-			</LogoContainer>
+			<MainContainer>
+				<div data-color></div>
+				<div data-color></div>
+				<div data-color></div>
 
-			<Form onSubmit={onSubmit}>
-				<InputControl>
-					<label htmlFor="username">Usuário</label>
+				<LogoContainer>
+					<Image src={Logo} alt="the website logo" />
+				</LogoContainer>
 
-					<input
-						type="text"
-						id="username"
-						value={username}
-						required
-						placeholder="Ex: jose123"
-						onChange={(e) => setUsername(e.target.value)}
-					/>
-				</InputControl>
+				<Form onSubmit={onSubmit}>
+					<InputControl>
+						<label htmlFor="username">Usuário</label>
 
-				<InputControl>
-					<label htmlFor="password">Password</label>
+						<input
+							type="text"
+							id="username"
+							value={username}
+							required
+							placeholder="Ex: jose123"
+							onChange={(e) => setUsername(e.target.value)}
+						/>
+					</InputControl>
 
-					<input
-						type="password"
-						id="password"
-						value={password}
-						required
-						minLength={6}
-						placeholder="*****"
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-				</InputControl>
+					<InputControl>
+						<label htmlFor="password">Password</label>
 
-				<SubmitButton type="submit">Entrar</SubmitButton>
-			</Form>
-		</MainContainer>
+						<input
+							type="password"
+							id="password"
+							value={password}
+							required
+							minLength={6}
+							placeholder="*****"
+							onChange={(e) => setPassword(e.target.value)}
+						/>
+					</InputControl>
+
+					<SubmitButton type="submit">Entrar</SubmitButton>
+				</Form>
+			</MainContainer>
+		</>
 	);
 }

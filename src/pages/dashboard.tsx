@@ -3,6 +3,7 @@ import { GetServerSidePropsContext } from "next";
 import getConfig from "next/config";
 import { readdirSync } from "fs";
 import { resolve } from "path";
+import Head from "next/head";
 
 import { IoFileTrayOutline } from "react-icons/io5";
 import Spreadsheet from "react-spreadsheet";
@@ -10,7 +11,7 @@ import { useState } from "react";
 
 import { TDashboardProps, handleFile, handleFolder } from "@/shared/dashboard.functions";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
-import { MainContainer, SideBar, Content } from "@/styles/dashboard.style";
+import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
 import { readExcelFile } from "@/shared/functions/read-excel-file";
 import { renderDocxFile } from "@/shared/functions/read-word-file";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
@@ -22,6 +23,9 @@ import { environment } from "@/config/env";
 import { EAllowedFileTypes } from "@/@types/file-types";
 
 export default function Dashboard(props: TDashboardProps) {
+	const headTitle = `${props.project.name} - Risti Scanner`;
+	const headDescription = `Visualize os documentos do projeto ${props.project.name}`;
+
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
 	const [selectedFile, setSelectedFile] = useState<TDataTreeFile | null>(null);
 	const [specialFileData, setSpecialFileData] = useState<any>(null);
@@ -81,6 +85,11 @@ export default function Dashboard(props: TDashboardProps) {
 
 	return (
 		<>
+			<Head>
+				<title>{headTitle}</title>
+				<meta name="description" content={headDescription} />
+			</Head>
+
 			<Header user={props.user} />
 
 			<MainContainer data-container>

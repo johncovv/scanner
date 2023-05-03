@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { config } from "./config";
+import { config } from "../config";
 
 export const MainContainer = styled.div`
 	max-height: calc(100vh - (${config.header.height} + 1.5rem));

@@ -3,7 +3,10 @@ const { startup } = require("./startup");
 
 const nextConfig = {
 	reactStrictMode: true,
-	styledComponents: true,
+
+	compiler: {
+		styledComponents: true,
+	},
 };
 
 module.exports = async () => {
