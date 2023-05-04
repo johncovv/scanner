@@ -1,25 +1,24 @@
-import { IoMdExit } from "react-icons/io";
+import { IoMdClose, IoMdExit } from "react-icons/io";
 import { useState } from "react";
 import router from "next/router";
 import Image from "next/image";
 
+import { HiPlusSmall } from "react-icons/hi2";
+import { BiEditAlt } from "react-icons/bi";
+
 import { Container, Content, LogoContainer } from "@/styles/components/Header.style";
-import type { TCheckItem } from "@/components/CheckItem.component";
-import CheckList from "@/components/CheckList.component";
-import Dropdown from "@/components/Dropdown.component";
+import { TasksDropdown } from "@/components/TasksDropdown.component";
 import type { TPublicUser } from "@/@types/iron-session";
+import type { TProjectSetting } from "@/@types/project";
 import Logo from "@/assets/logo-without-text.png";
+import type { TTask } from "@/@types/task";
 
 interface IHeaderProps {
 	user: Pick<TPublicUser, "username" | "name">;
+	project?: TProjectSetting;
 }
 
-export function Header({ user }: IHeaderProps) {
-	const [todo, setTodo] = useState<Array<TCheckItem>>([
-		{ id: "1", name: "Item 1", checked: false },
-		{ id: "2", name: "Item 2", checked: false },
-	]);
-
+export function Header({ user, project }: IHeaderProps) {
 	const handleLogout = async () => {
 		const res = await fetch("/api/logout", {
 			method: "POST",
@@ -40,11 +39,9 @@ export function Header({ user }: IHeaderProps) {
 
 				<div data-user>
 					<div>{user.name}</div>
-					<div>|</div>
-					<Dropdown trigger={{ triggerTitle: "Todo" }}>
-						<CheckList list={todo} allowAddMore updateList={(newList) => setTodo(newList)} />
-					</Dropdown>
-					<div>|</div>
+
+					{project && <TasksDropdown project={project} />}
+
 					<div>
 						<a onClick={handleLogout} data-logout>
 							<IoMdExit /> <span>Sair</span>

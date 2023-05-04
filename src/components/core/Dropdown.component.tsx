@@ -9,7 +9,7 @@ interface TDropdownProps extends React.HTMLAttributes<HTMLElement> {
 	} & React.HTMLAttributes<HTMLButtonElement>;
 }
 
-export default function Dropdown({ children, trigger = {}, ...rest }: TDropdownProps) {
+export function Dropdown({ children, trigger = {}, ...rest }: TDropdownProps) {
 	const { triggerTitle = "Clique aqui", ...triggerProps } = trigger;
 
 	const [isOpen, setIsOpen] = useState(false);

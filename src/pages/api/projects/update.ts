@@ -4,6 +4,34 @@ import getConfig, { setConfig } from "next/config";
 import { TProjectSettingComplete, TPublicProjectSettingComplete } from "@/@types/project";
 import { environment } from "@/config/env";
 
+export async function triggerProjectsUpdate() {
+	const serverConfig = await getUpdatedNextConfig();
+
+	setConfig(serverConfig);
+
+	const projectsList: Array<TPublicProjectSettingComplete> = serverConfig.serverRuntimeConfig.projectsList.map(
+		(project: TProjectSettingComplete) => {
+			const { password: _, ...owner } = project.owner;
+
+			return {
+				...project,
+				owner,
+			};
+		}
+	);
+
+	return projectsList;
+}
+
+async function getUpdatedNextConfig(): Promise<any> {
+	const startupScript = require("/startup.js").startup;
+
+	const currentConfig = getConfig();
+	currentConfig.serverRuntimeConfig.projectsList = await startupScript({ log: false });
+
+	return currentConfig;
+}
+
 export default withIronSessionApiRoute(
 	async function updateProjects(req, res) {
 		if (req.method !== "PUT") {
@@ -15,21 +43,7 @@ export default withIronSessionApiRoute(
 		}
 
 		// Update the next config with the projects list
-
-		const serverConfig = await getUpdatedNextConfig();
-
-		setConfig(serverConfig);
-
-		const projectsList: Array<TPublicProjectSettingComplete> = serverConfig.serverRuntimeConfig.projectsList.map(
-			(project: TProjectSettingComplete) => {
-				const { password: _, ...owner } = project.owner;
-
-				return {
-					...project,
-					owner,
-				};
-			}
-		);
+		const projectsList = triggerProjectsUpdate();
 
 		// Response
 
@@ -43,12 +57,3 @@ export default withIronSessionApiRoute(
 		},
 	}
 );
-
-async function getUpdatedNextConfig(): Promise<any> {
-	const startupScript = require("/startup.js").startup;
-
-	const currentConfig = getConfig();
-	currentConfig.serverRuntimeConfig.projectsList = await startupScript({ log: false });
-
-	return currentConfig;
-}

@@ -90,7 +90,7 @@ export default function Dashboard(props: TDashboardProps) {
 				<meta name="description" content={headDescription} />
 			</Head>
 
-			<Header user={props.user} />
+			<Header user={props.user} project={props.project} />
 
 			<MainContainer data-container>
 				<SideBar>
@@ -153,13 +153,12 @@ export const getServerSideProps = withIronSessionSsr(
 
 		// Return props
 
+		const { owner: _o, ...publicProject } = targetProject;
+
 		return {
 			props: {
-				user: { name: user.name, username: user.username },
-				project: {
-					id: targetProject.id,
-					name: targetProject.name,
-				},
+				user,
+				project: publicProject,
 				projectTree: [...rootFolders, ...rootFiles],
 			},
 		};

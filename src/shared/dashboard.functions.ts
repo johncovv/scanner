@@ -6,14 +6,12 @@ import type { TDataTreeFolder, TDataTreeFile, TDataTree } from "@/@types/tree";
 import { uuid } from "@/shared/functions/generate-uuid";
 import { EAllowedFileTypes } from "@/@types/file-types";
 import { TPublicUser } from "@/@types/iron-session";
+import { TProjectSetting } from "@/@types/project";
 import { FILE_TYPES } from "@/shared/file-tipes";
 
 export type TDashboardProps = {
-	user: Pick<TPublicUser, "username" | "name">;
-	project: {
-		id: string;
-		name: string;
-	};
+	user: Pick<TPublicUser, "username" | "name" | "projectId">;
+	project: TProjectSetting;
 	projectTree: TDataTree;
 };
 
