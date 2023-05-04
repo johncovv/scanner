@@ -43,7 +43,7 @@ export default withIronSessionApiRoute(
 		}
 
 		// Update the next config with the projects list
-		const projectsList = triggerProjectsUpdate();
+		const projectsList = await triggerProjectsUpdate();
 
 		// Response
 

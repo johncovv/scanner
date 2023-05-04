@@ -10,7 +10,7 @@ import {
 	IconContainer,
 } from "@/styles/components/Leaf.style";
 import { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
-import { FILE_TYPES } from "@/shared/file-tipes";
+import { FILE_TYPES } from "@/shared/utils/file-tipes";
 
 interface ILeafProps {
 	leaf: TDataTree[number];

@@ -29,7 +29,7 @@ export const Trigger = styled.button`
 
 export const Content = styled.div`
 	position: absolute;
-	z-index: 99999999;
+	z-index: 5;
 	top: 100%;
 	left: 0;
 	right: 0;

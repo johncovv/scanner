@@ -1,7 +1,12 @@
 import type { AppProps } from "next/app";
 import Head from "next/head";
 
+import { ToastMessagesProvider } from "@/context/toastMessages.context";
 import "@/styles/globals.css";
+
+function PageProviders({ children }: { children: React.ReactNode }) {
+	return <ToastMessagesProvider>{children}</ToastMessagesProvider>;
+}
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (
@@ -11,7 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
 				<title>Risti Scanner</title>
 			</Head>
 
-			<Component {...pageProps} />
+			<PageProviders>
+				<Component {...pageProps} />
+			</PageProviders>
 		</>
 	);
 }

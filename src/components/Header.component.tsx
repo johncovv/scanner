@@ -1,17 +1,13 @@
-import { IoMdClose, IoMdExit } from "react-icons/io";
-import { useState } from "react";
+import { IoMdExit } from "react-icons/io";
+
 import router from "next/router";
 import Image from "next/image";
-
-import { HiPlusSmall } from "react-icons/hi2";
-import { BiEditAlt } from "react-icons/bi";
 
 import { Container, Content, LogoContainer } from "@/styles/components/Header.style";
 import { TasksDropdown } from "@/components/TasksDropdown.component";
 import type { TPublicUser } from "@/@types/iron-session";
 import type { TProjectSetting } from "@/@types/project";
 import Logo from "@/assets/logo-without-text.png";
-import type { TTask } from "@/@types/task";
 
 interface IHeaderProps {
 	user: Pick<TPublicUser, "username" | "name">;

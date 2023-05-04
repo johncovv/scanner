@@ -7,7 +7,7 @@ import { uuid } from "@/shared/functions/generate-uuid";
 import { EAllowedFileTypes } from "@/@types/file-types";
 import { TPublicUser } from "@/@types/iron-session";
 import { TProjectSetting } from "@/@types/project";
-import { FILE_TYPES } from "@/shared/file-tipes";
+import { FILE_TYPES } from "@/shared/utils/file-tipes";
 
 export type TDashboardProps = {
 	user: Pick<TPublicUser, "username" | "name" | "projectId">;
