@@ -7,7 +7,9 @@ import { useState } from "react";
 
 import { Container, ActionsContainer, Button, Table } from "@/styles/pages/admin.style";
 import type { TPublicProjectSettingComplete } from "@/@types/project";
+import { useToastMessages } from "@/context/toastMessages.context";
 import type { TPublicUser } from "@/@types/iron-session";
+import { ConfirmModal, TConfirmModalProps } from "@/components/ConfirmModal";
 import { Header } from "@/components/Header.component";
 import { environment } from "@/config/env";
 
@@ -17,25 +19,44 @@ type TAdminProps = {
 };
 
 export default function Dashboard(props: TAdminProps) {
+	const { addMessage, updateMessage } = useToastMessages();
+
 	const [projectsList, setProjectsList] = useState<TAdminProps["projectsList"]>(props.projectsList);
 
 	async function handleProjectsUpdate() {
-		const wasAccepted = window.confirm("Are you sure you want to re-scan all the projets?");
+		const { id } = addMessage({ type: "loading", message: "Atualizando projetos..." });
 
-		if (wasAccepted) {
-			try {
-				const response = await fetch("/api/projects/update", {
-					method: "PUT",
-				});
+		try {
+			const response = await fetch("/api/projects/update", {
+				method: "PUT",
+			});
 
-				if (!response.ok) throw new Error("Failed to dispatch projects update");
+			if (!response.ok) throw new Error("Failed to dispatch projects update");
 
-				const data = await response.json();
-				setProjectsList(data);
-			} catch (error) {
-				console.error(error);
-			}
+			const data = await response.json();
+			setProjectsList(data);
+
+			updateMessage(id, { type: "success", message: "Projetos atualizadas com sucesso!" }, { delay: 300 });
+		} catch {
+			updateMessage(id, { type: "error", message: "Falha ao atualizar projetos!" }, { delay: 300 });
 		}
+	}
+
+	function renderUpdateProjectsButton() {
+		const props: TConfirmModalProps = {
+			title: "Atualizar projetos",
+			message: "Tem certeza que deseja atualizar as informações de projetos?",
+
+			onConfirm: handleProjectsUpdate,
+		};
+
+		return (
+			<ConfirmModal {...props}>
+				<Button type="button" onClick={handleProjectsUpdate}>
+					Atualizar projetos
+				</Button>
+			</ConfirmModal>
+		);
 	}
 
 	return (
@@ -68,11 +89,7 @@ export default function Dashboard(props: TAdminProps) {
 				<ActionsContainer>
 					<div data-title>Ações disponíveis:</div>
 
-					<div data-content>
-						<Button type="button" onClick={handleProjectsUpdate}>
-							Atualizar projetos
-						</Button>
-					</div>
+					<div data-content>{renderUpdateProjectsButton()}</div>
 				</ActionsContainer>
 			</Container>
 		</>
