@@ -2,8 +2,9 @@ import { useState } from "react";
 import Image from "next/image";
 import Head from "next/head";
 
-import Logo from "@/assets/completed-logo.png";
 import { MainContainer, LogoContainer, Form, InputControl, SubmitButton } from "@/styles/pages/login.style";
+import { useToastMessages } from "@/context/toastMessages.context";
+import Logo from "@/assets/completed-logo.png";
 
 export async function getStaticProps() {
 	return {
@@ -14,6 +15,8 @@ export async function getStaticProps() {
 }
 
 export default function LoginPage() {
+	const { addMessage, updateMessage } = useToastMessages();
+
 	const [password, setPassword] = useState("");
 	const [username, setUsername] = useState("");
 
@@ -21,11 +24,13 @@ export default function LoginPage() {
 		event.preventDefault();
 
 		if (!username || !password) {
-			alert("Port favor, preencha todos os campos!");
+			addMessage({ type: "error", message: "Port favor, preencha todos os campos!", duration: 3000 });
 			return;
 		}
 
 		// send the post request to the server
+
+		const { id } = addMessage({ type: "loading", message: "Fazendo login..." });
 
 		try {
 			const response = await fetch("/api/login", {
@@ -38,17 +43,21 @@ export default function LoginPage() {
 
 			const data = await response.json();
 
-			if (data.error) {
-				throw new Error(data.error);
-			}
+			if (!response.ok) throw new Error(data.ptError ?? data.error);
+			if (data.error) throw new Error(data.ptError ?? data.error);
+
+			// update the message to success and redirect
+			updateMessage(id, { type: "success", message: "Login feito com sucesso!", duration: 3000 });
 
 			if (data.user.isAdmin) {
 				window.location.assign("/admin");
 			} else {
 				window.location.assign("/dashboard");
 			}
-		} catch (error) {
-			alert(error ?? "Ocorreu um erro ao fazer login, tente novamente mais tarde!");
+		} catch (error: any) {
+			const errorMessage = error?.message ?? "Ocorreu um erro ao fazer login, tente novamente mais tarde!";
+
+			updateMessage(id, { type: "error", message: errorMessage, duration: 3000 });
 		}
 	};
 

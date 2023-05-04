@@ -29,7 +29,9 @@ export default withIronSessionApiRoute(
 		const targetProject = projectsList.find((project) => project.owner.username === username);
 
 		if (!targetProject) {
-			return res.status(401).send({ ok: false, error: "username/password is incorrect", status: 401 });
+			return res
+				.status(401)
+				.send({ ok: false, error: "username/password is incorrect", ptError: "Usuário/Senha incorreto", status: 401 });
 		}
 
 		// check if the username and password are correct
@@ -38,7 +40,9 @@ export default withIronSessionApiRoute(
 		const passwordIsCorrect = password === targetProject.owner.password;
 
 		if (!passwordIsCorrect || !usernameIsCorrect) {
-			return res.status(401).send({ ok: false, error: "username/password is incorrect", status: 401 });
+			return res
+				.status(401)
+				.send({ ok: false, error: "username/password is incorrect", ptError: "Usuário/Senha incorreto", status: 401 });
 		}
 
 		const { password: _, ...user } = targetProject.owner;
