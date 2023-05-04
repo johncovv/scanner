@@ -1,12 +1,20 @@
 import { createContext, useContext, useState } from "react";
 
 import { ToastPortal } from "@/components/core/ToastPortal.component";
+import { uuid } from "@/shared/functions/generate-uuid";
 import { IToastMessage } from "@/@types/toast-message";
+import { sleep } from "@/shared/utils/sleep";
 
 type TToastMessagesContext = {
 	messages: Array<IToastMessage>;
-	addMessage: (message: Omit<IToastMessage, "id">) => void;
+	addMessage: (message: Omit<IToastMessage, "id">) => IToastMessage;
 	removeMessage: (id: string) => void;
+
+	updateMessage: (
+		id: string,
+		message: Omit<IToastMessage, "id">,
+		configs?: { delay?: number }
+	) => Promise<IToastMessage>;
 };
 
 type TToastMessagesProviderProps = {
@@ -18,46 +26,78 @@ const ToastMessagesContext = createContext<TToastMessagesContext>({} as TToastMe
 
 // create a custom provider
 export const ToastMessagesProvider = ({ children }: TToastMessagesProviderProps) => {
-	const [messages, setMessages] = useState<Array<IToastMessage>>([
-		{
-			id: "1",
-			message: "This is a success message",
-			type: "success",
-		},
-		{
-			id: "2",
-			message: "This is an error message",
-			type: "error",
-		},
-		{
-			id: "3",
-			message: "This is a warning message! daçlj dlkjaslkdj salkj dlkas jdlkasj lkdas j",
-			type: "warning",
-		},
-		{
-			id: "4",
-			message: "This is an info message",
-			type: "info",
-		},
-		{
-			id: "5",
-			message: "This is a loading message",
-			type: "loading",
-		},
-	]);
+	const [messages, setMessages] = useState<Array<IToastMessage>>([]);
+	const [timers, setTimers] = useState<Array<{ [key: string]: NodeJS.Timeout }>>([]);
 
-	const addMessage = (message: Omit<IToastMessage, "id">) => {
-		const id = Math.random().toString(36).substr(2, 9);
+	function removeTimer(id: string) {
+		const timer = timers.find((timer) => timer[id]);
+		if (timer) clearTimeout(timer[id]);
 
-		setMessages((prev) => [...prev, { ...message, id }]);
-	};
+		setTimers((prev) => prev.filter((timer) => !timer[id]));
+	}
 
-	const removeMessage = (id: string) => {
+	function addTimer(message: IToastMessage) {
+		if (message.type === "loading") return;
+		if (message.duration === "infinite") return;
+
+		const timer = setTimeout(() => {
+			removeMessage(message.id);
+		}, message.duration ?? 3000);
+
+		setTimers((prev) => [...prev, { [message.id]: timer }]);
+	}
+
+	function addMessage(message: Omit<IToastMessage, "id">): IToastMessage {
+		const id = uuid();
+
+		const newMessage = { ...message, id };
+
+		if (message.type === "loading") {
+			newMessage.duration = "infinite";
+		}
+
+		setMessages((prev) => [...prev, newMessage]);
+		addTimer(newMessage);
+
+		return newMessage;
+	}
+
+	function removeMessage(id: string): void {
 		setMessages((prev) => prev.filter((message) => message.id !== id));
-	};
+	}
+
+	async function updateMessage(
+		id: string,
+		message: Omit<IToastMessage, "id">,
+		configs?: { delay?: number }
+	): Promise<IToastMessage> {
+		if (configs?.delay) await sleep(configs.delay);
+
+		return new Promise<IToastMessage>((resolve) => {
+			setMessages((prev) => {
+				// find the target message
+				const targetMessage = prev.find((message) => message.id === id);
+				if (!targetMessage) return prev;
+
+				// update the message
+				const updatedMessage = Object.assign({}, targetMessage, { duration: undefined }, message);
+				const updatedList = prev.map((message) => (message.id === id ? updatedMessage : message));
+
+				// resolve the promise with the updated message
+				resolve(updatedMessage);
+
+				// handle the timer
+				removeTimer(id);
+				addTimer(updatedMessage);
+
+				// return the updated list
+				return updatedList;
+			});
+		});
+	}
 
 	return (
-		<ToastMessagesContext.Provider value={{ messages, addMessage, removeMessage }}>
+		<ToastMessagesContext.Provider value={{ messages, addMessage, removeMessage, updateMessage }}>
 			<ToastPortal messages={messages} />
 
 			{children}

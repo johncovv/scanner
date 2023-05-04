@@ -4,6 +4,10 @@ import Head from "next/head";
 import { ToastMessagesProvider } from "@/context/toastMessages.context";
 import "@/styles/globals.css";
 
+function PageProviders({ children }: { children: React.ReactNode }) {
+	return <ToastMessagesProvider>{children}</ToastMessagesProvider>;
+}
+
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<>
@@ -12,9 +16,9 @@ export default function App({ Component, pageProps }: AppProps) {
 				<title>Risti Scanner</title>
 			</Head>
 
-			<ToastMessagesProvider>
+			<PageProviders>
 				<Component {...pageProps} />
-			</ToastMessagesProvider>
+			</PageProviders>
 		</>
 	);
 }

@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Container, Input, TextArea } from "@/styles/components/TaskModal.style";
 import { TaskController } from "@/controllers/task.controller";
 import { Modal } from "@/components/core/Modal.component";
 import type { TTask } from "@/@types/task";
+import { useToastMessages } from "@/context/toastMessages.context";
 
 type TTaskModalProps = {
 	trigger: React.ReactNode;
@@ -16,12 +17,22 @@ type TTaskModalProps = {
 };
 
 export function TaskModal({ projectId, task, trigger, ...props }: TTaskModalProps) {
+	const { addMessage, updateMessage } = useToastMessages();
+
 	const [title, setTitle] = useState(task?.title || "");
 	const [description, setDescription] = useState(task?.description || "");
 
 	async function createTask() {
-		const { createdTask } = await TaskController.createTask({ projectId, title, description });
-		props.onCreate?.(createdTask);
+		const { id } = addMessage({ type: "loading", message: "Criando tarefa..." });
+
+		try {
+			const { createdTask } = await TaskController.createTask({ projectId, title, description });
+			props.onCreate?.(createdTask);
+
+			updateMessage(id, { type: "success", message: "Tarefa criada com sucesso!" }, { delay: 300 });
+		} catch (error: any) {
+			updateMessage(id, { type: "error", message: error?.error || "Erro ao criar tarefa!" });
+		}
 	}
 
 	async function updateTask() {
@@ -36,8 +47,16 @@ export function TaskModal({ projectId, task, trigger, ...props }: TTaskModalProp
 			description,
 		};
 
-		const { updatedTask } = await TaskController.updateTask({ projectId, ...localUpdatedTask });
-		props.onUpdate?.(updatedTask);
+		const { id } = addMessage({ type: "loading", message: "Atualizando tarefa..." });
+
+		try {
+			const { updatedTask } = await TaskController.updateTask({ projectId, ...localUpdatedTask });
+			props.onUpdate?.(updatedTask);
+
+			updateMessage(id, { type: "success", message: "Tarefa atualizada com sucesso!" }, { delay: 300 });
+		} catch (error: any) {
+			updateMessage(id, { type: "error", message: error?.error || "Erro ao atualizar tarefa!" });
+		}
 	}
 
 	async function handleConfirm() {

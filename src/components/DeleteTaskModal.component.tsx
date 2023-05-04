@@ -1,3 +1,4 @@
+import { useToastMessages } from "@/context/toastMessages.context";
 import { TaskController } from "@/controllers/task.controller";
 import { Modal } from "@/components/core/Modal.component";
 import { TTask } from "@/@types/task";
@@ -12,9 +13,19 @@ type TDeleteTaskModalProps = {
 };
 
 export function DeleteTaskModal({ projectId, task, trigger, onDelete }: TDeleteTaskModalProps) {
+	const { addMessage, updateMessage } = useToastMessages();
+
 	async function handleConfirm() {
-		await TaskController.deleteTask({ projectId, taskId: task.id });
-		onDelete?.(task.id);
+		const { id } = addMessage({ type: "loading", message: "Excluindo tarefa..." });
+
+		try {
+			await TaskController.deleteTask({ projectId, taskId: task.id });
+			onDelete?.(task.id);
+
+			updateMessage(id, { type: "success", message: "Tarefa excluída com sucesso!" }, { delay: 300 });
+		} catch (error: any) {
+			updateMessage(id, { type: "error", message: error?.error || "Erro ao excluir tarefa!" });
+		}
 	}
 
 	return (

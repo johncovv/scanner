@@ -11,12 +11,10 @@ type TToastPortalProps = {
 
 export const ToastPortal = ({ messages }: TToastPortalProps) => {
 	return (
-		<ReactPortal wrapperId="toast-portal">
-			<Container>
-				{messages.map((message) => (
-					<ToastMessage key={message.id} data={message} />
-				))}
-			</Container>
-		</ReactPortal>
+		<Container>
+			{messages.map((message) => (
+				<ToastMessage key={message.id} data={message} />
+			))}
+		</Container>
 	);
 };
