@@ -9,7 +9,7 @@ import { IoFileTrayOutline } from "react-icons/io5";
 import Spreadsheet from "react-spreadsheet";
 import { useState } from "react";
 
-import { TDashboardProps, handleFile, handleFolder } from "@/shared/dashboard.functions";
+import { TDashboardProps, handleFile, handleFolder } from "@/core/dashboard.functions";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
 import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
 import { readExcelFile } from "@/shared/functions/read-excel-file";
