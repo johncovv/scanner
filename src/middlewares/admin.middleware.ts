@@ -6,18 +6,11 @@ import { environment } from "@/config/env";
 
 export default {
 	match: "/admin",
+	guard: true,
 	exec: async function (req: NextRequest): Promise<NextResponse> {
 		const response = NextResponse.next();
 
-		const session = await getIronSession(req, response, {
-			cookieName: environment.passport.cookie_name,
-			password: environment.passport.password,
-			cookieOptions: {
-				secure: process.env.NODE_ENV === "production",
-			},
-		});
-
-		const { user } = session;
+		const { user } = req.session;
 
 		if (!user) {
 			return NextResponse.redirect(new URL("/login", req.url));

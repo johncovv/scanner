@@ -9,15 +9,9 @@ export default {
 	exec: async function (req: NextRequest): Promise<NextResponse> {
 		const response = NextResponse.next();
 
-		const session = await getIronSession(req, response, {
-			cookieName: environment.passport.cookie_name,
-			password: environment.passport.password,
-			cookieOptions: {
-				secure: process.env.NODE_ENV === "production",
-			},
-		});
+		const { user } = req.session;
 
-		if (session.user != null) {
+		if (!user) {
 			return NextResponse.redirect(new URL("/dashboard", req.url));
 		}
 
