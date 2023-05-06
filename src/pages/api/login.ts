@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import cookie, { CookieSerializeOptions } from "cookie";
-import jwt from "jsonwebtoken";
+import getConfig from "next/config";
 
 import { MethodLimiter } from "@/decorators/methods.decorator";
-import { environment } from "@/config/env";
-import { TPublicUser } from "../../@types/iron-session";
-import { TProjectSettingComplete } from "../../@types/project";
-import getConfig from "next/config";
+import { TProjectSettingComplete } from "@/@types/project";
+import { TPublicUser } from "@/@types/iron-session";
 import { ApiError } from "@/shared/utils/api-error";
+import { environment } from "@/config/env";
+import jwt from "@/shared/functions/jwt";
 
 class Auth {
 	private static getCachedProjects() {
@@ -41,24 +41,25 @@ class Auth {
 
 		// if everything is correct, return the public user
 
-		return Object.assign({}, targetProject.owner, { password: undefined });
+		return Object.assign({}, targetProject.owner, { projectId: targetProject.id, password: undefined, isAdmin: false });
 	}
 
-	private static generateToken(user: TPublicUser) {
-		return jwt.sign(user, environment.JWT_TOKEN, { expiresIn: "7d" });
+	private static async generateToken(user: TPublicUser) {
+		return await jwt.generate(user, environment.JWT_TOKEN, { expiresIn: "7d" });
 	}
 
-	private static createAndSetCookie(res: NextApiResponse, { user }: { user: TPublicUser }) {
+	private static async createAndSetCookie(res: NextApiResponse, { user }: { user: TPublicUser }) {
 		const cookieOptions: CookieSerializeOptions = {
 			secure: process.env.NODE_ENV === "production",
-			sameSite: "lax",
 			maxAge: 60 * 60 * 24 * 7, // 7 days
+			sameSite: "strict",
 			httpOnly: true,
+			path: "/",
 		};
 
-		const token = Auth.generateToken(user);
+		const token = await Auth.generateToken(user);
 
-		res.setHeader("Set-Cookie", cookie.serialize("token", token, cookieOptions));
+		res.setHeader("Set-Cookie", cookie.serialize("auth-token", token, cookieOptions));
 	}
 
 	@MethodLimiter("POST")
@@ -88,7 +89,7 @@ class Auth {
 
 			// generate token and set cookie
 
-			Auth.createAndSetCookie(res, { user });
+			await Auth.createAndSetCookie(res, { user });
 
 			// return the user
 

@@ -1,17 +1,15 @@
-import { withIronSessionSsr } from "iron-session/next";
-import { GetServerSidePropsContext } from "next";
 import getConfig from "next/config";
 import Head from "next/head";
 
 import { useState } from "react";
 
 import { Container, ActionsContainer, Button, Table } from "@/styles/pages/admin.style";
+import { ConfirmModal, TConfirmModalProps } from "@/components/ConfirmModal";
 import type { TPublicProjectSettingComplete } from "@/@types/project";
 import { useToastMessages } from "@/context/toastMessages.context";
+import { withPageSession } from "@/shared/functions/page-session";
 import type { TPublicUser } from "@/@types/iron-session";
-import { ConfirmModal, TConfirmModalProps } from "@/components/ConfirmModal";
 import { Header } from "@/components/Header.component";
-import { environment } from "@/config/env";
 
 type TAdminProps = {
 	user: TPublicUser;
@@ -96,26 +94,17 @@ export default function Dashboard(props: TAdminProps) {
 	);
 }
 
-export const getServerSideProps = withIronSessionSsr(
-	async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: TAdminProps }> {
-		const { projectsList } = structuredClone(getConfig().serverRuntimeConfig);
+export const getServerSideProps = withPageSession(async function (context): Promise<{ props: TAdminProps }> {
+	const { projectsList } = structuredClone(getConfig().serverRuntimeConfig);
 
-		for (let project of projectsList) {
-			delete project.owner["password"];
-		}
-
-		return {
-			props: {
-				user: context.req.session.user!,
-				projectsList,
-			},
-		};
-	},
-	{
-		cookieName: environment.passport.cookie_name,
-		password: environment.passport.password,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production",
-		},
+	for (let project of projectsList) {
+		delete project.owner["password"];
 	}
-);
+
+	return {
+		props: {
+			user: context.session,
+			projectsList,
+		},
+	};
+});

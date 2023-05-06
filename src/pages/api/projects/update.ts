@@ -1,8 +1,7 @@
-import { withIronSessionApiRoute } from "iron-session/next";
+import { NextApiRequest, NextApiResponse } from "next/types";
 import getConfig, { setConfig } from "next/config";
 
 import { TProjectSettingComplete, TPublicProjectSettingComplete } from "@/@types/project";
-import { environment } from "@/config/env";
 
 export async function triggerProjectsUpdate() {
 	const serverConfig = await getUpdatedNextConfig();
@@ -32,28 +31,19 @@ async function getUpdatedNextConfig(): Promise<any> {
 	return currentConfig;
 }
 
-export default withIronSessionApiRoute(
-	async function updateProjects(req, res) {
-		if (req.method !== "PUT") {
-			return res.status(405).send({ ok: false, error: "method not allowed" });
-		}
-
-		if (!req.session.user) {
-			return res.status(401).send({ ok: false, error: "unauthorized" });
-		}
-
-		// Update the next config with the projects list
-		const projectsList = await triggerProjectsUpdate();
-
-		// Response
-
-		return res.status(200).send(projectsList);
-	},
-	{
-		cookieName: environment.passport.cookie_name,
-		password: environment.passport.password,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production",
-		},
+export default async function updateProjects(req: NextApiRequest, res: NextApiResponse) {
+	if (req.method !== "PUT") {
+		return res.status(405).send({ ok: false, error: "method not allowed" });
 	}
-);
+
+	if (!req.session) {
+		return res.status(401).send({ ok: false, error: "unauthorized" });
+	}
+
+	// Update the next config with the projects list
+	const projectsList = await triggerProjectsUpdate();
+
+	// Response
+
+	return res.status(200).send(projectsList);
+}
