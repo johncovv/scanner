@@ -45,7 +45,7 @@ class Auth {
 	}
 
 	private static async generateToken(user: TPublicUser) {
-		return await jwt.generate(user, environment.jwt_token, { expiresIn: "7d" });
+		return await jwt.generate(user, environment.jwt_token, { expiresIn: "7d", subject: "authentication" });
 	}
 
 	private static async createAndSetCookie(res: NextApiResponse, { user }: { user: TPublicUser }) {
