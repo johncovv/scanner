@@ -15,7 +15,7 @@ export function withPageSession(handle: (context: GetServerSidePropsContext & { 
 
 		if (!token) throw new ApiError(401, "Unauthorized", "Não autorizado");
 
-		const decoded = (await jwt.verify(token, environment.JWT_TOKEN)) as TPublicUser;
+		const decoded = (await jwt.verify(token, environment.jwt_token)) as TPublicUser;
 
 		const contextWithSession = Object.assign({}, context, { session: decoded });
 		return originalHandler(contextWithSession);

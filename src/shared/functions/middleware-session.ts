@@ -21,7 +21,7 @@ export function withMiddlewareSession(handler: TAuthHandler): TAuthHandler {
 		const token = req.cookies.get("auth-token")?.value;
 
 		if (token) {
-			const decoded = (await jwt.verify(token, environment.JWT_TOKEN)) as TPublicUser;
+			const decoded = (await jwt.verify(token, environment.jwt_token)) as TPublicUser;
 
 			req.session = decoded;
 		}

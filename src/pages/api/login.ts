@@ -45,12 +45,12 @@ class Auth {
 	}
 
 	private static async generateToken(user: TPublicUser) {
-		return await jwt.generate(user, environment.JWT_TOKEN, { expiresIn: "7d" });
+		return await jwt.generate(user, environment.jwt_token, { expiresIn: "7d" });
 	}
 
 	private static async createAndSetCookie(res: NextApiResponse, { user }: { user: TPublicUser }) {
 		const cookieOptions: CookieSerializeOptions = {
-			secure: process.env.NODE_ENV === "production",
+			secure: environment.is_production,
 			maxAge: 60 * 60 * 24 * 7, // 7 days
 			sameSite: "strict",
 			httpOnly: true,
