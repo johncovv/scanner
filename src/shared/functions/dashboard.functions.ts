@@ -1,11 +1,11 @@
 import { resolve, join, extname } from "path";
 import { Dirent, readdirSync } from "fs";
+import { v4 as uuid } from "uuid";
 import iconv from "iconv-lite";
 
 import type { TDataTreeFolder, TDataTreeFile, TDataTree } from "@/@types/tree";
-import { uuid } from "@/shared/functions/generate-uuid";
-import { EAllowedFileTypes } from "@/@types/file-types";
-import { TPublicUser } from "@/@types/iron-session";
+import { EAllowedFileTypes } from "@/@types/file-types.enum";
+import { TPublicUser } from "@/@types/session";
 import { TProjectSetting } from "@/@types/project";
 import { FILE_TYPES } from "@/shared/utils/file-tipes";
 

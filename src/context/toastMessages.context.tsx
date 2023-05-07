@@ -1,7 +1,7 @@
 import { createContext, useContext, useState } from "react";
+import { v4 as uuid } from "uuid";
 
 import { ToastPortal } from "@/components/core/ToastPortal.component";
-import { uuid } from "@/shared/functions/generate-uuid";
 import { IToastMessage } from "@/@types/toast-message";
 import { sleep } from "@/shared/utils/sleep";
 

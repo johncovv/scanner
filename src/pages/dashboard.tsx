@@ -1,4 +1,3 @@
-import { GetServerSidePropsContext } from "next/types";
 import getConfig from "next/config";
 import { readdirSync } from "fs";
 import { resolve } from "path";
@@ -8,16 +7,16 @@ import { IoFileTrayOutline } from "react-icons/io5";
 import Spreadsheet from "react-spreadsheet";
 import { useState } from "react";
 
-import { TDashboardProps, handleFile, handleFolder } from "@/core/dashboard.functions";
+import { TDashboardProps, handleFile, handleFolder } from "@/shared/functions/dashboard.functions";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
 import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
 import { readExcelFile } from "@/shared/functions/read-excel-file";
 import { renderDocxFile } from "@/shared/functions/read-word-file";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
 import { withPageSession } from "@/shared/functions/page-session";
-import type { TPublicUser } from "@/@types/iron-session";
+import type { TPublicUser } from "@/@types/session";
 import type { TProjectSetting } from "@/@types/project";
-import { EAllowedFileTypes } from "@/@types/file-types";
+import { EAllowedFileTypes } from "@/@types/file-types.enum";
 import { Header } from "@/components/Header.component";
 import { Leaf } from "@/components/Leaf.component";
 import { environment } from "@/config/env";

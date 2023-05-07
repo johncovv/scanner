@@ -8,7 +8,7 @@ import { ConfirmModal, TConfirmModalProps } from "@/components/ConfirmModal";
 import type { TPublicProjectSettingComplete } from "@/@types/project";
 import { useToastMessages } from "@/context/toastMessages.context";
 import { withPageSession } from "@/shared/functions/page-session";
-import type { TPublicUser } from "@/@types/iron-session";
+import type { TPublicUser } from "@/@types/session";
 import { Header } from "@/components/Header.component";
 
 type TAdminProps = {

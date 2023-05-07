@@ -1,4 +1,4 @@
-import type { TUser, TPublicUser } from "@/@types/iron-session.d";
+import type { TUser, TPublicUser } from "@/@types/session.d";
 import type { TTask } from "@/@types/task.d";
 
 export type TProjectSetting = {

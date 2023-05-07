@@ -5,7 +5,7 @@ import Image from "next/image";
 
 import { Container, Content, LogoContainer } from "@/styles/components/Header.style";
 import { TasksDropdown } from "@/components/TasksDropdown.component";
-import type { TPublicUser } from "@/@types/iron-session";
+import type { TPublicUser } from "@/@types/session";
 import type { TProjectSetting } from "@/@types/project";
 import Logo from "@/assets/logo-without-text.png";
 

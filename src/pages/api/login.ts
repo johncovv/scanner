@@ -2,9 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import cookie, { CookieSerializeOptions } from "cookie";
 import getConfig from "next/config";
 
-import { MethodLimiter } from "@/decorators/methods.decorator";
+import { MethodLimiter } from "@/shared/decorators/methods.decorator";
 import { TProjectSettingComplete } from "@/@types/project";
-import { TPublicUser } from "@/@types/iron-session";
+import { TPublicUser } from "@/@types/session";
 import { ApiError } from "@/shared/utils/api-error";
 import { environment } from "@/config/env";
 import jwt from "@/shared/functions/jwt";

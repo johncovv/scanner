@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next";
 
 import { ApiError } from "@/shared/utils/api-error";
-import { TPublicUser } from "@/@types/iron-session";
+import { TPublicUser } from "@/@types/session";
 import { environment } from "@/config/env";
 import jwt from "@/shared/functions/jwt";
 
