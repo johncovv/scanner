@@ -1,4 +1,4 @@
-import { withIronSessionApiRoute } from "iron-session/next";
+import { NextApiRequest, NextApiResponse } from "next/types";
 import getConfig from "next/config";
 import fs from "fs/promises";
 import path from "path";
@@ -13,75 +13,65 @@ export interface ITodoUpdateTaskDTO extends Omit<TTask, "id"> {
 	taskId: string;
 }
 
-export default withIronSessionApiRoute(
-	async function updateTask(req, res) {
-		if (req.method !== "PUT") {
-			return res.status(405).send({ ok: false, error: "method not allowed" });
-		}
-
-		// get the data from the request body and validate it
-
-		const { projectId, taskId, ...task }: ITodoUpdateTaskDTO = req.body;
-
-		if (!projectId) {
-			return res.status(400).send({ ok: false, error: "The parameter 'projectId' was not provided!" });
-		}
-
-		if (!taskId) {
-			return res.status(400).send({ ok: false, error: "The parameter 'taskId' was not provided!" });
-		}
-
-		// check if the project and task exists
-
-		const { serverRuntimeConfig } = getConfig();
-		const projectsList = <Array<TProjectSettingComplete>>serverRuntimeConfig.projectsList;
-
-		const targetProject = projectsList.find((project) => project.id === projectId);
-
-		if (!targetProject) {
-			return res.status(404).send({ ok: false, error: "The project was not found!" });
-		}
-
-		const targetTask = targetProject.tasks?.find((ct) => ct.id === taskId);
-
-		if (!targetTask) {
-			return res.status(404).send({ ok: false, error: "The task was not found!" });
-		}
-
-		// update the target task using the provided data
-
-		const updatedTask: TTask = {
-			...targetTask,
-			...task,
-			updatedAt: new Date(),
-		};
-
-		// update the project tasks list
-
-		const updatedProjectTasks = targetProject.tasks?.map((ct) => (ct.id === taskId ? updatedTask : ct));
-
-		const updatedProjectSettings = {
-			...targetProject,
-			tasks: updatedProjectTasks,
-		};
-
-		// save the updated project settings
-
-		const projectPath = path.join(environment.staticDir, targetProject.folder_name, "setting.json");
-
-		await fs.writeFile(projectPath, JSON.stringify(updatedProjectSettings, null, 2), "utf8");
-
-		// update the cached projects list
-		await triggerProjectsUpdate();
-
-		return res.status(200).send({ ok: true, updatedTask });
-	},
-	{
-		cookieName: environment.passport.cookie_name,
-		password: environment.passport.password,
-		// secure: true should be used in production (HTTPS) but can't be used in development (HTTP)
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production",
-		},
+export default async function updateTask(req: NextApiRequest, res: NextApiResponse) {
+	if (req.method !== "PUT") {
+		return res.status(405).send({ ok: false, error: "method not allowed" });
 	}
-);
+
+	// get the data from the request body and validate it
+
+	const { projectId, taskId, ...task }: ITodoUpdateTaskDTO = req.body;
+
+	if (!projectId) {
+		return res.status(400).send({ ok: false, error: "The parameter 'projectId' was not provided!" });
+	}
+
+	if (!taskId) {
+		return res.status(400).send({ ok: false, error: "The parameter 'taskId' was not provided!" });
+	}
+
+	// check if the project and task exists
+
+	const { serverRuntimeConfig } = getConfig();
+	const projectsList = <Array<TProjectSettingComplete>>serverRuntimeConfig.projectsList;
+
+	const targetProject = projectsList.find((project) => project.id === projectId);
+
+	if (!targetProject) {
+		return res.status(404).send({ ok: false, error: "The project was not found!" });
+	}
+
+	const targetTask = targetProject.tasks?.find((ct) => ct.id === taskId);
+
+	if (!targetTask) {
+		return res.status(404).send({ ok: false, error: "The task was not found!" });
+	}
+
+	// update the target task using the provided data
+
+	const updatedTask: TTask = {
+		...targetTask,
+		...task,
+		updatedAt: new Date(),
+	};
+
+	// update the project tasks list
+
+	const updatedProjectTasks = targetProject.tasks?.map((ct) => (ct.id === taskId ? updatedTask : ct));
+
+	const updatedProjectSettings = {
+		...targetProject,
+		tasks: updatedProjectTasks,
+	};
+
+	// save the updated project settings
+
+	const projectPath = path.join(environment.staticDir, targetProject.folder_name, "setting.json");
+
+	await fs.writeFile(projectPath, JSON.stringify(updatedProjectSettings, null, 2), "utf8");
+
+	// update the cached projects list
+	await triggerProjectsUpdate();
+
+	return res.status(200).send({ ok: true, updatedTask });
+}

@@ -1,5 +1,4 @@
-import { withIronSessionSsr } from "iron-session/next";
-import { GetServerSidePropsContext } from "next";
+import { GetServerSidePropsContext } from "next/types";
 import getConfig from "next/config";
 import { readdirSync } from "fs";
 import { resolve } from "path";
@@ -15,12 +14,13 @@ import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style"
 import { readExcelFile } from "@/shared/functions/read-excel-file";
 import { renderDocxFile } from "@/shared/functions/read-word-file";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
-import { Header } from "@/components/Header.component";
-import type { TProjectSetting } from "@/@types/project";
+import { withPageSession } from "@/shared/functions/page-session";
 import type { TPublicUser } from "@/@types/iron-session";
+import type { TProjectSetting } from "@/@types/project";
+import { EAllowedFileTypes } from "@/@types/file-types";
+import { Header } from "@/components/Header.component";
 import { Leaf } from "@/components/Leaf.component";
 import { environment } from "@/config/env";
-import { EAllowedFileTypes } from "@/@types/file-types";
 
 export default function Dashboard(props: TDashboardProps) {
 	const headTitle = `${props.project.name} - Risti Scanner`;
@@ -113,61 +113,52 @@ export default function Dashboard(props: TDashboardProps) {
 	);
 }
 
-export const getServerSideProps = withIronSessionSsr(
-	async function getServerSideProps(context: GetServerSidePropsContext): Promise<{ props: TDashboardProps }> {
-		const user: TPublicUser = context.req.session.user!;
+export const getServerSideProps = withPageSession(async function (context): Promise<{ props: TDashboardProps }> {
+	const user: TPublicUser = context.session;
 
-		// Get project settings
+	// Get project settings
 
-		const { serverRuntimeConfig } = getConfig();
-		const { projectsList } = serverRuntimeConfig;
+	const { serverRuntimeConfig } = getConfig();
+	const { projectsList } = serverRuntimeConfig;
 
-		const targetProject = projectsList.find((project: TProjectSetting) => project.id === user.projectId);
+	const targetProject = projectsList.find((project: TProjectSetting) => project.id === user.projectId);
 
-		if (!targetProject) throw new Error("Project not found");
+	if (!targetProject) throw new Error("Project not found");
 
-		// Get project tree
+	// Get project tree
 
-		const staticFolderPath = resolve(environment.staticDir, targetProject.folder_name);
-		const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
+	const staticFolderPath = resolve(environment.staticDir, targetProject.folder_name);
+	const directoryInfo = await readdirSync(staticFolderPath, { withFileTypes: true });
 
-		// Handle folders and files
+	// Handle folders and files
 
-		let rootFolders: Array<TDataTreeFolder> = [];
-		let rootFiles: Array<TDataTreeFile> = [];
+	let rootFolders: Array<TDataTreeFolder> = [];
+	let rootFiles: Array<TDataTreeFile> = [];
 
-		for (const item of directoryInfo) {
-			if (item.isFile()) {
-				const file = await handleFile(item);
-				if (file) rootFiles.push(file);
-			} else {
-				const folder = await handleFolder(item, staticFolderPath);
-				if (folder) rootFolders.push(folder);
-			}
+	for (const item of directoryInfo) {
+		if (item.isFile()) {
+			const file = await handleFile(item);
+			if (file) rootFiles.push(file);
+		} else {
+			const folder = await handleFolder(item, staticFolderPath);
+			if (folder) rootFolders.push(folder);
 		}
-
-		// Sort folders and files
-
-		rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
-		rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
-
-		// Return props
-
-		const { owner: _o, ...publicProject } = targetProject;
-
-		return {
-			props: {
-				user,
-				project: publicProject,
-				projectTree: [...rootFolders, ...rootFiles],
-			},
-		};
-	},
-	{
-		cookieName: environment.passport.cookie_name,
-		password: environment.passport.password,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production",
-		},
 	}
-);
+
+	// Sort folders and files
+
+	rootFolders = rootFolders.sort((a, b) => (a.title > b.title ? 1 : -1));
+	rootFiles = rootFiles.sort((a, b) => (a.title > b.title ? 1 : -1));
+
+	// Return props
+
+	const { owner: _o, ...publicProject } = targetProject;
+
+	return {
+		props: {
+			user,
+			project: publicProject,
+			projectTree: [...rootFolders, ...rootFiles],
+		},
+	};
+});

@@ -153,6 +153,13 @@
 
 15. Make sure the project are running, opening the public IP on a new browser's tab
 
+16. After all the server are working, save the pm2 script to start with the system
+	```bash
+	pm2 startup
+
+	pm2 save
+	```
+
 <br><br>
 
 ---
