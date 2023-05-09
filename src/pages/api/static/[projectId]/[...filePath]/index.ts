@@ -18,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	const targetProject = projectsList.find((project) => project.id === projectId);
 
 	if (!targetProject) {
-		return res.status(404).send({ ok: false, error: "project not found" });
+		return res.status(404).send({ ok: false, message: "project not found", ptMessage: "projeto não encontrado" });
 	}
 
 	// getting file path

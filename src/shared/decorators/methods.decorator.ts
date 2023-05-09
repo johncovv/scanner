@@ -7,11 +7,25 @@ export function MethodLimiter(method: TMethod) {
 		const originalMethod = descriptor.value;
 
 		descriptor.value = async function (req: NextApiRequest, res: NextApiResponse) {
-			if (req.method !== method) return res.status(405).json({ ok: false, error: "Method not allowed" });
+			if (req.method !== method) {
+				return res.status(405).json({ ok: false, message: "Method not allowed", ptMessage: "Método não permitido" });
+			}
 
 			return originalMethod.apply(this, [req, res]);
 		};
 
 		return descriptor;
+	};
+}
+
+export function FuncMethodLimiter(method: TMethod) {
+	return function (handler: (req: NextApiRequest, res: NextApiResponse) => Promise<NextApiResponse | void>) {
+		return async function (req: NextApiRequest, res: NextApiResponse) {
+			if (req.method !== method) {
+				return res.status(405).json({ ok: false, message: "Method not allowed", ptMessage: "Método não permitido" });
+			}
+
+			return handler(req, res);
+		};
 	};
 }

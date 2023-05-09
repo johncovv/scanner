@@ -4,6 +4,7 @@ import { v4 as uuid } from "uuid";
 import fs from "fs/promises";
 import path from "path";
 
+import { FuncMethodLimiter } from "@/shared/decorators/methods.decorator";
 import { triggerProjectsUpdate } from "@api/projects/update";
 import { TProjectSettingComplete } from "@/@types/project";
 import { environment } from "@/config/env";
@@ -15,21 +16,25 @@ export interface ITodoAddTaskDTO {
 	description: string;
 }
 
-export default async function createTask(req: NextApiRequest, res: NextApiResponse) {
-	if (req.method !== "POST") {
-		return res.status(405).send({ ok: false, error: "method not allowed" });
-	}
-
+export default FuncMethodLimiter("POST")(async function (req: NextApiRequest, res: NextApiResponse) {
 	// get the data from the request body and validate it
 
 	const { projectId, title, description }: ITodoAddTaskDTO = req.body;
 
 	if (!projectId) {
-		return res.status(400).send({ ok: false, error: "The parameter 'projectId' was not provided!" });
+		return res.status(400).send({
+			ok: false,
+			message: "The parameter 'projectId' was not provided!",
+			ptMessage: "O parâmetro 'identificador do projeto' não foi fornecido!",
+		});
 	}
 
 	if (!title) {
-		return res.status(400).send({ ok: false, error: "The parameter 'title' was not provided!" });
+		return res.status(400).send({
+			ok: false,
+			message: "The parameter 'title' was not provided!",
+			ptMessage: "O parâmetro 'título' não foi fornecido!",
+		});
 	}
 
 	// check if the project exists
@@ -40,7 +45,11 @@ export default async function createTask(req: NextApiRequest, res: NextApiRespon
 	const targetProject = projectsList.find((project) => project.id === projectId);
 
 	if (!targetProject) {
-		return res.status(400).send({ ok: false, error: "The project was not found!" });
+		return res.status(400).send({
+			ok: false,
+			message: "The project was not found!",
+			ptMessage: "O projeto não foi encontrado!",
+		});
 	}
 
 	// create the new task
@@ -73,4 +82,4 @@ export default async function createTask(req: NextApiRequest, res: NextApiRespon
 	await triggerProjectsUpdate();
 
 	return res.status(200).send({ ok: true, createdTask: newTask });
-}
+});
