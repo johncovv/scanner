@@ -5,6 +5,7 @@ import { TMiddleware } from "@/shared/functions/middleware-session";
 
 export default {
 	match: "/admin",
+	isPrivate: true,
 	exec: async function (req: NextRequest): Promise<NextResponse> {
 		const response = NextResponse.next();
 
