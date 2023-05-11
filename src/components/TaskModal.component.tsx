@@ -31,7 +31,7 @@ export function TaskModal({ projectId, task, trigger, ...props }: TTaskModalProp
 
 			updateMessage(id, { type: "success", message: "Tarefa criada com sucesso!" }, { delay: 300 });
 		} catch (error: any) {
-			updateMessage(id, { type: "error", message: error?.error || "Erro ao criar tarefa!" });
+			updateMessage(id, { type: "error", message: error?.ptMessage || "Erro ao criar tarefa!" });
 		}
 	}
 
@@ -55,7 +55,7 @@ export function TaskModal({ projectId, task, trigger, ...props }: TTaskModalProp
 
 			updateMessage(id, { type: "success", message: "Tarefa atualizada com sucesso!" }, { delay: 300 });
 		} catch (error: any) {
-			updateMessage(id, { type: "error", message: error?.error || "Erro ao atualizar tarefa!" });
+			updateMessage(id, { type: "error", message: error?.ptMessage || "Erro ao atualizar tarefa!" });
 		}
 	}
 

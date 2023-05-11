@@ -43,8 +43,7 @@ export default function LoginPage() {
 
 			const data = await response.json();
 
-			if (!response.ok) throw new Error(data.ptError ?? data.error);
-			if (data.error) throw new Error(data.ptError ?? data.error);
+			if (!response.ok) throw new Error(data.ptMessage ?? data.message);
 
 			// update the message to success and redirect
 			updateMessage(id, { type: "success", message: "Login feito com sucesso!", duration: 3000 });
@@ -55,7 +54,7 @@ export default function LoginPage() {
 				window.location.assign("/dashboard");
 			}
 		} catch (error: any) {
-			const errorMessage = error?.message ?? "Ocorreu um erro ao fazer login, tente novamente mais tarde!";
+			const errorMessage = error?.ptMessage ?? "Ocorreu um erro ao fazer login, tente novamente mais tarde!";
 
 			updateMessage(id, { type: "error", message: errorMessage, duration: 3000 });
 		}

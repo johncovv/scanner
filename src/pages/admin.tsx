@@ -35,8 +35,8 @@ export default function Dashboard(props: TAdminProps) {
 			setProjectsList(data);
 
 			updateMessage(id, { type: "success", message: "Projetos atualizadas com sucesso!" }, { delay: 300 });
-		} catch {
-			updateMessage(id, { type: "error", message: "Falha ao atualizar projetos!" }, { delay: 300 });
+		} catch (error: any) {
+			updateMessage(id, { type: "error", message: error?.ptMessage ?? "Falha ao atualizar projetos!" }, { delay: 300 });
 		}
 	}
 

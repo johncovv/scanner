@@ -24,7 +24,7 @@ export function DeleteTaskModal({ projectId, task, trigger, onDelete }: TDeleteT
 
 			updateMessage(id, { type: "success", message: "Tarefa excluída com sucesso!" }, { delay: 300 });
 		} catch (error: any) {
-			updateMessage(id, { type: "error", message: error?.error || "Erro ao excluir tarefa!" });
+			updateMessage(id, { type: "error", message: error?.ptMessage || "Erro ao excluir tarefa!" });
 		}
 	}
 
