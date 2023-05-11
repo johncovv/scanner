@@ -11,7 +11,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 	let middlewares: Array<TMiddleware> = [dashboardMiddleware, adminMiddleware, loginMiddleware];
 
 	// add the session to all middlewares
-	middlewares = middlewares.map((m) => ({ ...m, exec: withMiddlewareSession(m.exec) }));
+	middlewares = middlewares.map((m) => ({ ...m, exec: withMiddlewareSession(m.exec, m.isPrivate) }));
 
 	// Find middleware to execute
 	const middlewareToExec = middlewares.find((middleware) => middleware.match.match(req.nextUrl.pathname));
@@ -20,8 +20,11 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
 		try {
 			return await middlewareToExec.exec(req);
 		} catch (error) {
-			if (error instanceof ApiError && error.code === 401) {
-				return NextResponse.redirect(new URL("/login", req.url));
+			if (error instanceof ApiError) {
+				switch (error.code) {
+					case 401:
+						return NextResponse.redirect(new URL("/login", req.url));
+				}
 			}
 
 			throw error;

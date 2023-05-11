@@ -15,7 +15,15 @@ export function withPageSession(handle: (context: GetServerSidePropsContext & { 
 
 		if (!token) throw new ApiError(401, "Unauthorized", "Não autorizado");
 
-		const decoded = (await jwt.verify(token, environment.jwt_token)) as TPublicUser;
+		const decoded = await jwt.decode<TPublicUser>(token, environment.jwt_token);
+
+		if (!decoded) {
+			throw new ApiError(401, "Invalid token", "Token de autenticação inválido");
+		}
+
+		if (decoded.exp && decoded.exp < Date.now() / 1000) {
+			throw new ApiError(401, "Token expired", "Token de autenticação expirado");
+		}
 
 		const contextWithSession = Object.assign({}, context, { session: decoded });
 		return originalHandler(contextWithSession);

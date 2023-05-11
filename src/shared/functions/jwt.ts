@@ -5,12 +5,12 @@ type TGenerateConfig = { expiresIn?: string | number; subject?: string };
 
 const textEncoder = new TextEncoder();
 
-async function verify(token: string, secret: string) {
+async function decode<T = Record<string, unknown>>(token: string, secret: string): Promise<JWTPayload & T> {
 	try {
 		const verifiedToken = await jwtVerify(token, textEncoder.encode(secret));
 
-		return verifiedToken.payload;
-	} catch (error) {
+		return verifiedToken.payload as JWTPayload & T;
+	} catch {
 		throw new Error("Invalid token");
 	}
 }
@@ -30,6 +30,6 @@ async function generate(payload: JWTPayload, secret: string, config: TGenerateCo
 }
 
 export default {
-	verify,
+	decode,
 	generate,
 };
