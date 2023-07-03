@@ -48,6 +48,18 @@ export const Content = styled.div`
 	}
 `;
 
+export const TitleContainer = styled.div`
+	height: 100%;
+	display: flex;
+	flex-direction: row nowrap;
+	align-items: center;
+
+	[data-title] {
+		margin-left: 1.5rem;
+		color: #ffffff;
+	}
+`;
+
 export const LogoContainer = styled.div`
 	padding: 0.4rem 0;
 	height: 90%;

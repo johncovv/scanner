@@ -3,7 +3,7 @@ import { IoMdExit } from "react-icons/io";
 import router from "next/router";
 import Image from "next/image";
 
-import { Container, Content, LogoContainer } from "@/styles/components/Header.style";
+import { Container, Content, TitleContainer, LogoContainer } from "@/styles/components/Header.style";
 import { TasksDropdown } from "@/components/TasksDropdown.component";
 import type { TPublicUser } from "@/@types/session";
 import type { TProjectSetting } from "@/@types/project";
@@ -29,9 +29,13 @@ export function Header({ user, project }: IHeaderProps) {
 	return (
 		<Container>
 			<Content data-container>
-				<LogoContainer>
-					<Image src={Logo} alt="The website logo" />
-				</LogoContainer>
+				<TitleContainer>
+					<LogoContainer>
+						<Image src={Logo} alt="The website logo" />
+					</LogoContainer>
+
+					<h2 data-title>{project?.name}</h2>
+				</TitleContainer>
 
 				<div data-user>
 					<div>{user.name}</div>
