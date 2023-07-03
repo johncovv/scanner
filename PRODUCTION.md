@@ -82,7 +82,7 @@
     ```.env
     ADMIN_PASSWORD=<ADMIN_PASSWORD>
     STATIC_DIR=<STATIC_FOLDER_PATH>
-		JWT_TOKEN=<RANDOM_PASSWORD_WITH_AT_LEAST_32_CHARACTERS>
+    	JWT_TOKEN=<RANDOM_PASSWORD_WITH_AT_LEAST_32_CHARACTERS>
     ```
 
 12. Install the NGINX for reverse proxy server
@@ -154,11 +154,12 @@
 15. Make sure the project are running, opening the public IP on a new browser's tab
 
 16. After all the server are working, save the pm2 script to start with the system
-	```bash
-	pm2 startup
 
-	pm2 save
-	```
+    ```bash
+    pm2 startup
+
+    pm2 save
+    ```
 
 <br><br>
 
@@ -202,6 +203,7 @@
      ```
 
 2. Configuring FTP access
+
    - Open the vsftpd config file
      ```bash
      sudo nano /etc/vsftpd.conf
@@ -209,7 +211,7 @@
    - Set the following configurations
 
      ```bash
-		listen=YES
+     listen=YES
 
      # Allow anonymous FTP? (Disabled by default).
      anonymous_enable=NO
@@ -236,7 +238,7 @@
      allow_writeable_chroot=YES
      secure_chroot_dir=/var/run/vsftpd/empty
 
-		# Configure the passive mode
+     # Configure the passive mode
      pasv_enable=YES
      pasv_min_port=1024
      pasv_max_port=1048
