@@ -80,9 +80,9 @@
 11. Create a `.env.production` file with the following content
 
     ```.env
-    PASSPORT_PASSWORD=<RANDOM_PASSWORD_WITH_AT_LEAST_64_CHARACTERS>
     ADMIN_PASSWORD=<ADMIN_PASSWORD>
     STATIC_DIR=<STATIC_FOLDER_PATH>
+		JWT_TOKEN=<RANDOM_PASSWORD_WITH_AT_LEAST_32_CHARACTERS>
     ```
 
 12. Install the NGINX for reverse proxy server
@@ -209,6 +209,8 @@
    - Set the following configurations
 
      ```bash
+		listen=YES
+
      # Allow anonymous FTP? (Disabled by default).
      anonymous_enable=NO
 
@@ -234,7 +236,7 @@
      allow_writeable_chroot=YES
      secure_chroot_dir=/var/run/vsftpd/empty
 
-      # Configure the passive mode
+		# Configure the passive mode
      pasv_enable=YES
      pasv_min_port=1024
      pasv_max_port=1048
