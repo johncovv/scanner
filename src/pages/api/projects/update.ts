@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next/types";
 import getConfig, { setConfig } from "next/config";
 
 import { TProjectSettingComplete, TPublicProjectSettingComplete } from "@/@types/project";
-import { FuncMethodLimiter } from "@/shared/decorators/methods.decorator";
+import { FuncMethodLimiter, WithSession } from "@/shared/decorators/methods.decorator";
 
 export async function triggerProjectsUpdate() {
 	const serverConfig = await getUpdatedNextConfig();
@@ -32,15 +32,13 @@ async function getUpdatedNextConfig(): Promise<any> {
 	return currentConfig;
 }
 
-export default FuncMethodLimiter("PUT")(async function (req: NextApiRequest, res: NextApiResponse) {
-	if (!req.session) {
-		return res.status(401).send({ ok: false, message: "unauthorized", ptMessage: "não autorizado" });
-	}
+export default WithSession({ dispatchError: true })(
+	FuncMethodLimiter("PUT")(async function (req: NextApiRequest, res: NextApiResponse) {
+		// Update the next config with the projects list
+		const projectsList = await triggerProjectsUpdate();
 
-	// Update the next config with the projects list
-	const projectsList = await triggerProjectsUpdate();
+		// Response
 
-	// Response
-
-	return res.status(200).send(projectsList);
-});
+		return res.status(200).send(projectsList);
+	})
+);
