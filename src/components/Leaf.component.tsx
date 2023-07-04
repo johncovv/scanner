@@ -1,5 +1,6 @@
+import { BsFolder, BsDownload } from "react-icons/bs";
 import { BiChevronDown } from "react-icons/bi";
-import { BsFolder } from "react-icons/bs";
+import { AiOutlineCloudDownload } from "react-icons/ai";
 
 import {
 	Folder,
@@ -19,6 +20,7 @@ interface ILeafProps {
 	handles: {
 		handleFolderClick: (id: string) => void;
 		handleFileClick: (file: TDataTreeFile) => void;
+		handleDownloadFile: (file: TDataTreeFile) => void;
 	};
 }
 
@@ -46,6 +48,17 @@ export function Leaf(props: ILeafProps) {
 
 				<span data-title>{file.title}</span>
 				<span>.{file.ext}</span>
+
+				<button
+					type="button"
+					data-download
+					onClick={(e) => {
+						e.stopPropagation();
+						handles.handleDownloadFile(file);
+					}}
+				>
+					<AiOutlineCloudDownload size={18} />
+				</button>
 			</File>
 		);
 	}

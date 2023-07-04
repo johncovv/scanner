@@ -33,7 +33,7 @@ export default function Dashboard(props: TDashboardProps) {
 		setProjectTree(newTree);
 	}
 
-	function getDocUrl(file: TDataTreeFile, type: "office" | "googleDocs") {
+	function getSpecialFileUrl(file: TDataTreeFile, type: "office" | "googleDocs") {
 		const officeDocReaderUrl = "https://view.officeapps.live.com/op/embed.aspx?src=";
 		const googleDocReaderUrl = "https://docs.google.com/gview?embedded=true&url=";
 
@@ -48,11 +48,11 @@ export default function Dashboard(props: TDashboardProps) {
 		switch (file.ext) {
 			case EAllowedFileTypes.doc:
 			case EAllowedFileTypes.docx:
-				setSpecialFileData(getDocUrl(file, "googleDocs"));
+				setSpecialFileData(getSpecialFileUrl(file, "googleDocs"));
 				break;
 			case EAllowedFileTypes.xls:
 			case EAllowedFileTypes.xlsx:
-				setSpecialFileData(getDocUrl(file, "office"));
+				setSpecialFileData(getSpecialFileUrl(file, "office"));
 				break;
 			default:
 				setSpecialFileData(null);
@@ -62,6 +62,12 @@ export default function Dashboard(props: TDashboardProps) {
 		// after handling the special data, set the selected file
 		setSelectedFile(file);
 		setContentKey((value) => value + 1);
+	}
+
+	function handleDownloadFile(file: TDataTreeFile) {
+		const link = `/api/static/${props.project.id}/${file.path}?download=true`;
+
+		window.open(link, "_blank", "noopener,noreferrer");
 	}
 
 	function renderSelectedFile() {
@@ -108,6 +114,7 @@ export default function Dashboard(props: TDashboardProps) {
 							handles={{
 								handleFileClick,
 								handleFolderClick,
+								handleDownloadFile,
 							}}
 						/>
 					))}

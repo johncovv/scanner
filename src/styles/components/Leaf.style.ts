@@ -96,6 +96,7 @@ export const File = styled.button`
 	background-color: #d9d9d9;
 	padding: 1rem;
 	padding-left: 3rem;
+	padding-right: calc(2rem + 18px);
 	border-radius: 5px;
 	width: 100%;
 	border: none;
@@ -118,6 +119,28 @@ export const File = styled.button`
 		text-overflow: ellipsis;
 		white-space: nowrap;
 		width: fit-content;
+	}
+
+	& > button[data-download] {
+		transform: translateY(-50%);
+		position: absolute;
+		right: 1rem;
+		top: 50%;
+		background: transparent;
+		border: 0;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		svg {
+			margin-left: 1px;
+			transition: transform 100ms ease-in-out;
+		}
+
+		&:hover svg {
+			transform: scale(1.3);
+		}
 	}
 `;
 

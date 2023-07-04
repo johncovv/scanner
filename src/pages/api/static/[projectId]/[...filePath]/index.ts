@@ -7,8 +7,10 @@ import * as mime from "mime";
 import { TProjectSettingComplete } from "@/@types/project";
 import { environment } from "@/config/env";
 
+type TQuery = { projectId: string; filePath: string[]; download?: "true" };
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-	const { projectId, filePath } = req.query as { projectId: string; filePath: string[] };
+	const { projectId, filePath, download } = req.query as TQuery;
 
 	// get next config
 
@@ -34,11 +36,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	const fileName = filePath[filePath.length - 1];
 
-	res.writeHead(200, {
-		"Content-Type": mimeType,
-		"Content-Disposition": `inline; filename=${fileName}`,
-		"Content-Length": stat.size,
-	});
+	if (download) {
+		res.writeHead(200, {
+			"Content-Type": mimeType,
+			"Content-Disposition": `attachment; filename=${fileName}`,
+			"Content-Length": stat.size,
+		});
+	} else {
+		res.writeHead(200, {
+			"Content-Type": mimeType,
+			"Content-Disposition": `inline; filename=${fileName}`,
+			"Content-Length": stat.size,
+		});
+	}
 
 	// piping file to response
 
