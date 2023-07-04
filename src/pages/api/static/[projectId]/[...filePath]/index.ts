@@ -34,21 +34,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	// setting headers
 
+	const contentDisposition = `${download ? "attachment" : "inline"}`;
 	const fileName = filePath[filePath.length - 1];
 
-	if (download) {
-		res.writeHead(200, {
-			"Content-Type": mimeType,
-			"Content-Disposition": `attachment; filename=${fileName}`,
-			"Content-Length": stat.size,
-		});
-	} else {
-		res.writeHead(200, {
-			"Content-Type": mimeType,
-			"Content-Disposition": `inline; filename=${fileName}`,
-			"Content-Length": stat.size,
-		});
-	}
+	res.writeHead(200, {
+		"Content-Type": mimeType,
+		"Content-Disposition": `${contentDisposition}; filename=${fileName}`,
+		"Content-Length": stat.size,
+	});
 
 	// piping file to response
 

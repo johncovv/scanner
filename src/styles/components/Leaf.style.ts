@@ -121,7 +121,7 @@ export const File = styled.button`
 		width: fit-content;
 	}
 
-	& > button[data-download] {
+	& > [data-download] {
 		transform: translateY(-50%);
 		position: absolute;
 		right: 1rem;

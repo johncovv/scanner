@@ -49,8 +49,7 @@ export function Leaf(props: ILeafProps) {
 				<span data-title>{file.title}</span>
 				<span>.{file.ext}</span>
 
-				<button
-					type="button"
+				<span
 					data-download
 					onClick={(e) => {
 						e.stopPropagation();
@@ -58,7 +57,7 @@ export function Leaf(props: ILeafProps) {
 					}}
 				>
 					<AiOutlineCloudDownload size={18} />
-				</button>
+				</span>
 			</File>
 		);
 	}
