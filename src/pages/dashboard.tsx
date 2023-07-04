@@ -10,8 +10,6 @@ import { useState } from "react";
 import { TDashboardProps, handleFile, handleFolder } from "@/shared/functions/dashboard.functions";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
 import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
-import { readExcelFile } from "@/shared/functions/read-excel-file";
-import { renderDocxFile } from "@/shared/functions/read-word-file";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
 import { withPageSession } from "@/shared/functions/page-session";
 import type { TPublicUser } from "@/@types/session";
@@ -35,16 +33,26 @@ export default function Dashboard(props: TDashboardProps) {
 		setProjectTree(newTree);
 	}
 
+	function getDocUrl(file: TDataTreeFile, type: "office" | "googleDocs") {
+		const officeDocReaderUrl = "https://view.officeapps.live.com/op/embed.aspx?src=";
+		const googleDocReaderUrl = "https://docs.google.com/gview?embedded=true&url=";
+
+		const host = window.location.origin;
+
+		const readerUrl = type === "office" ? officeDocReaderUrl : googleDocReaderUrl;
+
+		return `${readerUrl}${host}/api/static/${props.project.id}/${file.path}`;
+	}
+
 	async function handleFileClick(file: TDataTreeFile) {
 		switch (file.ext) {
-			case EAllowedFileTypes.xlsx:
-			case EAllowedFileTypes.xls:
-				const excelFile = await readExcelFile(props.project.id, file);
-				setSpecialFileData(excelFile);
-				break;
 			case EAllowedFileTypes.doc:
 			case EAllowedFileTypes.docx:
-				void renderDocxFile(props.project.id, file);
+				setSpecialFileData(getDocUrl(file, "googleDocs"));
+				break;
+			case EAllowedFileTypes.xls:
+			case EAllowedFileTypes.xlsx:
+				setSpecialFileData(getDocUrl(file, "office"));
 				break;
 			default:
 				setSpecialFileData(null);
@@ -62,10 +70,9 @@ export default function Dashboard(props: TDashboardProps) {
 		switch (selectedFile.ext) {
 			case EAllowedFileTypes.xlsx:
 			case EAllowedFileTypes.xls:
-				return <Spreadsheet data={specialFileData} />;
 			case EAllowedFileTypes.doc:
 			case EAllowedFileTypes.docx:
-				return <div data-docx-preview></div>;
+				return <iframe data-docx-preview src={specialFileData} width="1366px" height="623px" frameBorder="0" />;
 			default:
 				return <iframe src={`/api/static/${props.project.id}/${selectedFile.path}`} />;
 		}
