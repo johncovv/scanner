@@ -126,6 +126,12 @@
       		proxy_pass         "http://127.0.0.0:3000";
       	}
       }
+      server {
+        listen 80;
+        server_name <YOUR_DOMAIN>;
+
+        return 301 https://$server_name$request_uri;
+      }
       ```
 
     - Create a link of the config in to the `sites-enabled`
