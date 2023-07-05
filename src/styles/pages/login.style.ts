@@ -45,6 +45,7 @@ export const MainContainer = styled.main`
 
 export const LogoContainer = styled.div`
 	margin-bottom: 1.5rem;
+	z-index: 10;
 
 	& > img {
 		max-width: 300px;
@@ -55,6 +56,7 @@ export const LogoContainer = styled.div`
 export const Form = styled.form`
 	display: flex;
 	flex-direction: column;
+	z-index: 10;
 `;
 
 export const InputControl = styled.div`
