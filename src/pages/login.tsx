@@ -63,7 +63,7 @@ export default function LoginPage() {
 	return (
 		<>
 			<Head>
-				<title>Login - Risti Scanner</title>
+				<title>Login - Risti Projetos</title>
 			</Head>
 
 			<MainContainer>

@@ -60,7 +60,7 @@ export default function Dashboard(props: TAdminProps) {
 	return (
 		<>
 			<Head>
-				<title>Administração - Risti Scanner</title>
+				<title>Administração - Risti Projetos</title>
 			</Head>
 
 			<Header user={props.user} />

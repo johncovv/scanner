@@ -20,7 +20,7 @@ import { Leaf } from "@/components/Leaf.component";
 import { environment } from "@/config/env";
 
 export default function Dashboard(props: TDashboardProps) {
-	const headTitle = `${props.project.name} - Risti Scanner`;
+	const headTitle = `${props.project.name} - Risti Projetos`;
 	const headDescription = `Visualize os documentos do projeto ${props.project.name}`;
 
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
