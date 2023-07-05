@@ -18,6 +18,7 @@ export const MainContainer = styled.main`
 	& > [data-color] {
 		position: absolute;
 		filter: blur(150px);
+		pointer-events: none;
 
 		&:nth-child(1) {
 			top: -350px;
