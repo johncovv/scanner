@@ -41,7 +41,7 @@ export default function Dashboard(props: TDashboardProps) {
 
 		const readerUrl = type === "office" ? officeDocReaderUrl : googleDocReaderUrl;
 
-		return `${readerUrl}${host}/api/static/${props.project.id}/${file.path}`;
+		return `${readerUrl}${host}/api/static/${props.project.id}/${file.path}&cachebreacker=${Date.now()}`;
 	}
 
 	async function handleFileClick(file: TDataTreeFile) {
