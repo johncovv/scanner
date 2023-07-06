@@ -31,8 +31,6 @@ export function TasksDropdown({ project }: IHeaderProps) {
 
 	return (
 		<>
-			<div>|</div>
-
 			<Dropdown>
 				<CheckList>
 					<>

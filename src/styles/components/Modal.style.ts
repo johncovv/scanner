@@ -65,7 +65,7 @@ export const Footer = styled.div`
 		}
 
 		&[data-primary] {
-			background-color: var(--secondary-blue);
+			background-color: var(--secondary-color);
 			color: #fff;
 		}
 	}

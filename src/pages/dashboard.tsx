@@ -8,6 +8,7 @@ import Spreadsheet from "react-spreadsheet";
 import { useState } from "react";
 
 import { TDashboardProps, handleFile, handleFolder } from "@/shared/functions/dashboard.functions";
+import { renderCustomTabInfo, renderCustomStyle } from "@/shared/utils/theme-helpers";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
 import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
@@ -20,7 +21,6 @@ import { Leaf } from "@/components/Leaf.component";
 import { environment } from "@/config/env";
 
 export default function Dashboard(props: TDashboardProps) {
-	const headTitle = `${props.project.name} - Risti Projetos`;
 	const headDescription = `Visualize os documentos do projeto ${props.project.name}`;
 
 	const [projectTree, setProjectTree] = useState<TDataTree>(props.projectTree);
@@ -97,13 +97,15 @@ export default function Dashboard(props: TDashboardProps) {
 
 	return (
 		<>
+			{renderCustomStyle(props.project.type)}
+
 			<Head>
-				<title>{headTitle}</title>
 				<meta name="description" content={headDescription} />
+
+				{renderCustomTabInfo(props.project)}
 			</Head>
 
 			<Header user={props.user} project={props.project} />
-
 			<MainContainer data-container>
 				<SideBar>
 					{projectTree.map((leaf) => (

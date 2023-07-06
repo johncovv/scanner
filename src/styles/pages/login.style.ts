@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const MainContainer = styled.main`
-	background: linear-gradient(to bottom, #f1f4f9, #60bcd5, #24a3da);
+	background: linear-gradient(to bottom, #f1f4f9, #60bcd5, var(--primary-color));
 	background-size: cover;
 	background-position: center;
 
@@ -86,7 +86,7 @@ export const SubmitButton = styled.button`
 	padding: 0.75rem;
 	border: none;
 	border-radius: 4px;
-	background-color: #166eae;
+	background-color: var(--primary-color);
 	color: #fff;
 	cursor: pointer;
 	outline: none;

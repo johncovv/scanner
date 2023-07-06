@@ -79,7 +79,6 @@ class Auth {
 
 			if (isAdmin) {
 				user = {
-					name: "Administrador",
 					username: "admin",
 					isAdmin: true,
 				};

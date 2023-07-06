@@ -1,7 +1,5 @@
 :root {
 	--doc-preview-bg: #7f7f7f;
-	--primary-blue: #166eae;
-	--secondary-blue: #24a8e0;
 }
 
 * {
@@ -21,10 +19,14 @@ body {
 
 body {
 	background: rgb(235, 235, 235);
+
+	--primary-color: #166eae;
+	--secondary-color: #24a8e0;
+	--tertiary-color: #3cc7ff;
 }
 
 body [data-container] {
-	max-width: 1640px;
+	max-width: 1240px;
 	margin: 0 auto;
 	padding: 0 1.5rem;
 }
@@ -53,9 +55,9 @@ main iframe body {
 }
 
 *::-webkit-scrollbar-thumb {
-	background: linear-gradient(to top, #60bcd5, #24a3da);
+	background: linear-gradient(to top, var(--tertiary-color), var(--primary-color));
 }
 
 *::-webkit-scrollbar-thumb:horizontal {
-	background: linear-gradient(to left, #60bcd5, #24a3da);
+	background: linear-gradient(to left, var(--tertiary-color), var(--primary-color));
 }

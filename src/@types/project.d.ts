@@ -6,6 +6,7 @@ export type TProjectSetting = {
 	name: string;
 	folder_name: string;
 	tasks?: Array<TTask>;
+	type?: "RISTI" | "TREESALES";
 };
 
 export type TProjectSettingComplete = {

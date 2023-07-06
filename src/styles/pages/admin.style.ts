@@ -14,11 +14,11 @@ export const Container = styled.div`
 `;
 
 export const ActionsContainer = styled.div`
-	border: 1px solid var(--primary-blue);
+	border: 1px solid var(--primary-color);
 	height: fit-content;
 
 	[data-title] {
-		background-color: var(--primary-blue);
+		background-color: var(--primary-color);
 		font-weight: bold;
 		padding: 0.5rem;
 		color: #fff;
@@ -32,7 +32,7 @@ export const ActionsContainer = styled.div`
 
 export const Button = styled.button`
 	width: 100%;
-	background-color: var(--secondary-blue);
+	background-color: var(--secondary-color);
 	padding: 0.75rem;
 	border: none;
 	border-radius: 4px;

@@ -4,7 +4,7 @@ import styled, { css } from "styled-components";
 
 export const FolderTrigger = styled.button`
 	position: relative;
-	background-color: #24a8e0;
+	background-color: var(--secondary-color);
 	color: #fff;
 	padding: 1rem;
 	padding-left: 3rem;
@@ -27,7 +27,7 @@ export const FolderTrigger = styled.button`
 
 	transition: background-color 100ms ease-in-out;
 	&:hover {
-		background-color: #166eae;
+		background-color: var(--primary-color);
 	}
 
 	&[disabled] {
@@ -111,7 +111,7 @@ export const File = styled.button`
 	}
 
 	&[data-file-selected="true"] {
-		box-shadow: inset 0 0 0 2px #24a8e0 !important;
+		box-shadow: inset 0 0 0 2px var(--secondary-color) !important;
 	}
 
 	& > [data-title] {

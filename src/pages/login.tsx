@@ -64,6 +64,7 @@ export default function LoginPage() {
 		<>
 			<Head>
 				<title>Login - Risti Projetos</title>
+				<link rel="icon" href="/favicon.ico" data-original />
 			</Head>
 
 			<MainContainer>

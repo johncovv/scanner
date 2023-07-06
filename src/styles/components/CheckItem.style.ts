@@ -2,7 +2,7 @@ import styled, { css } from "styled-components";
 
 export const CheckboxHover = css`
 	background-color: #e5e5e5;
-	box-shadow: 0 0 0 2px rgba(36, 163, 218, 0.5);
+	box-shadow: 0 0 0 2px var(--tertiary-color);
 `;
 
 export const Container = styled.li`
@@ -32,14 +32,14 @@ export const CheckBox = styled.span`
 
 	margin-right: 0.5rem;
 	border-radius: 3px;
-	border: 1px solid #24a3da;
+	border: 1px solid var(--secondary-color);
 
 	&:hover {
 		${CheckboxHover}
 	}
 
 	[data-checkbox-icon] {
-		background-color: #24a3da;
+		background-color: var(--secondary-color);
 		border-radius: 3px;
 		display: none;
 		width: 100%;

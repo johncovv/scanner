@@ -10,7 +10,7 @@ import { TProjectSetting } from "@/@types/project";
 import { FILE_TYPES } from "@/shared/utils/file-tipes";
 
 export type TDashboardProps = {
-	user: Pick<TPublicUser, "username" | "name" | "projectId">;
+	user: Pick<TPublicUser, "username" | "projectId">;
 	project: TProjectSetting;
 	projectTree: TDataTree;
 };

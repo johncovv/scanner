@@ -61,6 +61,7 @@ export default function Dashboard(props: TAdminProps) {
 		<>
 			<Head>
 				<title>Administração - Risti Projetos</title>
+				<link rel="icon" href="/favicon.ico" data-original />
 			</Head>
 
 			<Header user={props.user} />

@@ -8,9 +8,10 @@ import { TasksDropdown } from "@/components/TasksDropdown.component";
 import type { TPublicUser } from "@/@types/session";
 import type { TProjectSetting } from "@/@types/project";
 import Logo from "@/assets/logo-without-text.png";
+import LogoTreeSales from "@/assets/logo-treesales.png";
 
 interface IHeaderProps {
-	user: Pick<TPublicUser, "username" | "name">;
+	user: Pick<TPublicUser, "username">;
 	project?: TProjectSetting;
 }
 
@@ -26,20 +27,25 @@ export function Header({ user, project }: IHeaderProps) {
 		if (res.ok) router.push("/login");
 	};
 
+	function renderLogo() {
+		switch (project?.type) {
+			case "TREESALES":
+				return <Image src={LogoTreeSales} alt="The website logo" />;
+			default:
+				return <Image src={Logo} alt="The website logo" />;
+		}
+	}
+
 	return (
 		<Container>
 			<Content data-container>
 				<TitleContainer>
-					<LogoContainer>
-						<Image src={Logo} alt="The website logo" />
-					</LogoContainer>
+					<LogoContainer>{renderLogo()}</LogoContainer>
 
 					<h2 data-title>{project?.name}</h2>
 				</TitleContainer>
 
 				<div data-user>
-					<div>{user.name}</div>
-
 					{project && <TasksDropdown project={project} />}
 
 					<div>

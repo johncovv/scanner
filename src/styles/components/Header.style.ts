@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { config } from "@/styles/config";
 
 export const Container = styled.header`
-	background: linear-gradient(to left, #60bcd5, #24a3da 25%);
+	background: linear-gradient(to left, var(--tertiary-color), var(--primary-color) 25%);
 	height: ${config.header.height};
 `;
 
