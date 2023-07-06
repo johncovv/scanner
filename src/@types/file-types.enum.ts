@@ -11,4 +11,5 @@ export enum EAllowedFileTypes {
 	jpg = "jpg",
 	jpeg = "jpeg",
 	gif = "gif",
+	html = "html",
 }

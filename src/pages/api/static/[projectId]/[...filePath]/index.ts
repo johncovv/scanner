@@ -41,6 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		"Content-Type": mimeType,
 		"Content-Disposition": `${contentDisposition}; filename=${fileName}`,
 		"Content-Length": stat.size,
+		"Expires": "0",
 	});
 
 	// piping file to response

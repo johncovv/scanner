@@ -120,7 +120,9 @@ export default function Dashboard(props: TDashboardProps) {
 					))}
 				</SideBar>
 
-				<Content key={contentKey}>{selectedFile ? renderSelectedFile() : renderEmptyContent()}</Content>
+				<Content key={contentKey} data-extension={selectedFile?.ext}>
+					{selectedFile ? renderSelectedFile() : renderEmptyContent()}
+				</Content>
 			</MainContainer>
 		</>
 	);

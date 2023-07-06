@@ -24,7 +24,7 @@ body {
 }
 
 body [data-container] {
-	max-width: 1240px;
+	max-width: 1640px;
 	margin: 0 auto;
 	padding: 0 1.5rem;
 }

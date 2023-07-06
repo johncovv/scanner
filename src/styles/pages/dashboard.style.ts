@@ -58,4 +58,8 @@ export const Content = styled.main`
 			margin-top: 0.5rem;
 		}
 	}
+
+	&[data-extension="html"] {
+		background-color: #ffffff !important;
+	}
 `;

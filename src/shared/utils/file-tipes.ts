@@ -11,6 +11,7 @@ import {
 	BsFiletypePng,
 	BsFiletypeJpg,
 	BsFiletypeGif,
+	BsFiletypeHtml,
 } from "react-icons/bs";
 
 export const FILE_TYPES: {
@@ -28,4 +29,5 @@ export const FILE_TYPES: {
 	jpg: BsFiletypeJpg,
 	jpeg: BsFiletypeJpg,
 	gif: BsFiletypeGif,
+	html: BsFiletypeHtml,
 };
