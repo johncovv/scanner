@@ -2,13 +2,12 @@ import styled from "styled-components";
 import { config } from "../config";
 
 export const MainContainer = styled.div`
-	max-height: calc(100vh - (${config.header.height} + 1.5rem));
-	min-height: calc(100vh - (${config.header.height} + 1.5rem));
+	max-height: calc(100vh - (${config.header.height}));
+	min-height: calc(100vh - (${config.header.height}));
 
-	margin-top: 1.5rem;
-	padding: 1.5rem 0;
 	display: flex;
 	flex-direction: row;
+	padding-top: 1.5rem !important;
 `;
 
 export const SideBar = styled.aside`
@@ -19,8 +18,7 @@ export const SideBar = styled.aside`
 	min-width: 350px;
 	max-width: 350px;
 
-	max-height: calc(100vh - (${config.header.height} + 1.5rem));
-	margin-left: 1.5rem;
+	max-height: calc(100vh - (${config.header.height}));
 	overflow-y: auto;
 
 	& > [data-folder]:first-child > button,
@@ -30,14 +28,12 @@ export const SideBar = styled.aside`
 `;
 
 export const Content = styled.main`
-	max-height: calc(100vh - (${config.header.height} + 1.5rem));
-	min-height: calc(100vh - (${config.header.height} + 1.5rem));
 	margin-left: 1.5rem;
 	flex-grow: 1;
 	overflow: auto;
 
 	background-color: var(--doc-preview-bg);
-	border-radius: 5px;
+	border-radius: 5px 5px 0 0;
 
 	iframe {
 		display: block;

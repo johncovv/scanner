@@ -23,7 +23,7 @@ body {
 	background: rgb(235, 235, 235);
 }
 
-body *[data-container] {
+body [data-container] {
 	max-width: 1240px;
 	margin: 0 auto;
 	padding: 0 1.5rem;
@@ -37,20 +37,6 @@ a {
 button,
 a {
 	cursor: pointer;
-}
-
-.Spreadsheet {
-	display: block !important;
-	height: fit-content !important;
-	width: fit-content !important;
-}
-
-.docx-wrapper {
-	height: 100%;
-	background: var(--doc-preview-bg) !important;
-}
-.docx-wrapper .docx {
-	width: 100% !important;
 }
 
 main iframe body {
