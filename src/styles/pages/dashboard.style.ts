@@ -27,13 +27,19 @@ export const SideBar = styled.aside`
 	}
 `;
 
-export const Content = styled.main`
+export const ContentContainer = styled.div`
 	margin-left: 1.5rem;
 	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+`;
+
+export const Content = styled.main`
+	flex: 1;
 	overflow: auto;
 
 	background-color: var(--doc-preview-bg);
-	border-radius: 5px 5px 0 0;
+	border-top-right-radius: 5px;
 
 	iframe {
 		display: block;
@@ -62,4 +68,12 @@ export const Content = styled.main`
 	&[data-extension="html"] {
 		background-color: #ffffff !important;
 	}
+`;
+
+export const ContentTitle = styled.div`
+	padding: 0.5rem 1rem;
+	width: fit-content;
+	border-radius: 5px 5px 0 0;
+	background-color: var(--secondary-color);
+	color: #ffffff;
 `;

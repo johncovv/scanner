@@ -4,13 +4,12 @@ import { resolve } from "path";
 import Head from "next/head";
 
 import { IoFileTrayOutline } from "react-icons/io5";
-import Spreadsheet from "react-spreadsheet";
 import { useState } from "react";
 
 import { TDashboardProps, handleFile, handleFolder } from "@/shared/functions/dashboard.functions";
 import { renderCustomTabInfo, renderCustomStyle } from "@/shared/utils/theme-helpers";
 import type { TDataTree, TDataTreeFile, TDataTreeFolder } from "@/@types/tree";
-import { MainContainer, SideBar, Content } from "@/styles/pages/dashboard.style";
+import { MainContainer, SideBar, ContentContainer, Content, ContentTitle } from "@/styles/pages/dashboard.style";
 import { toggleFolder } from "@/shared/functions/toggleFolder";
 import { withPageSession } from "@/shared/functions/page-session";
 import type { TPublicUser } from "@/@types/session";
@@ -122,9 +121,13 @@ export default function Dashboard(props: TDashboardProps) {
 					))}
 				</SideBar>
 
-				<Content key={contentKey} data-extension={selectedFile?.ext}>
-					{selectedFile ? renderSelectedFile() : renderEmptyContent()}
-				</Content>
+				<ContentContainer>
+					{selectedFile && <ContentTitle>{selectedFile.title}</ContentTitle>}
+
+					<Content key={contentKey} data-extension={selectedFile?.ext}>
+						{selectedFile ? renderSelectedFile() : renderEmptyContent()}
+					</Content>
+				</ContentContainer>
 			</MainContainer>
 		</>
 	);
